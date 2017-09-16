@@ -25,7 +25,6 @@ import { EndView } from '../../other/publicEment';
 import OrderCancel from './OrderCancel';
 import ErrorAlert from '../../other/ErrorAlert';
 import AlertMoudle from '../../other/AlertMoudle';
-import PayOrder from '../../car/PayOrder';
 
 export default class OrderComponent extends Component {
     // 默认参数
@@ -275,17 +274,6 @@ export default class OrderComponent extends Component {
                                 }
                                 {deleteAlert ?
                                     <AlertMoudle visiable={deleteAlert} {...this.alertObject} />
-                                    : null
-                                }
-                                {showPayModal?
-                                    <PayOrder 
-                                        mToken={mToken}
-                                        payMoney={this.payMoney}
-                                        orderNumber={this.orderID}
-                                        visible={showPayModal}
-                                        navigation={navigation}
-                                        hidePayBox={this.hidePaymentBox}
-                                    />
                                     : null
                                 }
                             </View> :

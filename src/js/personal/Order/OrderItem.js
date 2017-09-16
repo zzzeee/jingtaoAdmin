@@ -20,7 +20,7 @@ import Urls from '../../public/apiUrl';
 import { Size, PX, pixel, Color } from '../../public/globalStyle';
 import Lang, {str_replace} from '../../public/language';
 import Nothing from '../../other/ListNothing';
-import OrderGood from '../../car/OrderGood';
+import OrderGood from './OrderGood';
 
 export default class OrderComponent extends Component {
     // 默认参数

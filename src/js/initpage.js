@@ -11,7 +11,7 @@ import {
     View,
 } from 'react-native';
 
-var DeviceInfo = require('react-native-device-info');
+import DeviceInfo from 'react-native-device-info';
 import JPushModule from 'jpush-react-native';
 const receiveCustomMsgEvent = "receivePushMsg";
 const receiveNotificationEvent = "receiveNotification";
@@ -27,15 +27,18 @@ export default class PushActivity extends Component {
 	}
 
 	componentWillMount() {
-        _User.getUserID()
-        .then((result) => {
-            if(result) {
-                this.props.navigation.navigate('Main');
-            }else {
-                this.props.navigation.navigate('Login');
-            }
-        });
+        this.getLocalToken();
+        // this.appActivityLog();
     }
+
+    getLocalToken = async () => {
+        let token = await _User.getUserID().then((result)=>result);
+        if(token) {
+            this.props.navigation.navigate('Main');
+        }else {
+            this.props.navigation.navigate('Login');
+        }
+    };
 
     //活动记录和数据统计
     appActivityLog = () => {
@@ -74,7 +77,7 @@ export default class PushActivity extends Component {
 
 	componentDidMount() {
         JPushModule.getInfo((map) => {
-            console.log(map);
+            // console.log(map);
             /**
              {
                 myAppKey: "AppKey:4805ff13416b3cc4966f8e6f"

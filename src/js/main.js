@@ -34,32 +34,37 @@ export default class Main extends Component {
         };
         this.alertBody = null;
         this.shop = null;
+        this.mToken = null;
     }
 
-    // async componentDidMount() {
-    //     let navigation = this.props.navigation;
-    //     let userid = await _User.getUserID()
-    //         .then((result) => result);
-    //     if(!userid) {
-    //         navigation.navigate('Login');
-    //     }else {
-    //         let ret = await Utils.async_fetch(Urls.shopBasicInfo, 'post', {sToken: userid});
-    //         console.log(ret);
-    //         if(ret && ret.sTatus == 1) {
-    //             if(ret.shopInfo) {
-    //                 this.shop = ret.shopInfo;
-    //                 this.setState({
-    //                     shopName: ret.shopInfo.sShopName || null,
-    //                     shopUser: ret.shopInfo.linkmanTel || null,
-    //                     shopHead: ret.shopInfo.sLogo || null,
-    //                 });
-    //             }
-    //         }else {
-    //             _User.delUserID()
-    //             .then(()=>navigation.navigate('Login'));
-    //         }
-    //     }
-    // }
+    componentDidMount() {
+        this.initPage();
+    }
+
+    initPage = async () => {
+        let navigation = this.props.navigation;
+        let userid = await _User.getUserID().then((result) => result);
+        if(!userid) {
+            navigation.navigate('Login');
+        }else {
+            let ret = await Utils.async_fetch(Urls.shopBasicInfo, 'post', {sToken: userid});
+            console.log(ret);
+            if(ret && ret.sTatus == 1) {
+                if(ret.shopInfo) {
+                    this.mToken = userid;
+                    this.shop = ret.shopInfo;
+                    this.setState({
+                        shopName: ret.shopInfo.sShopName || null,
+                        shopUser: ret.shopInfo.linkmanTel || null,
+                        shopHead: ret.shopInfo.sLogo || null,
+                    });
+                }
+            }else {
+                _User.delUserID()
+                .then(()=>navigation.navigate('Login'));
+            }
+        }
+    };
 
     //显示提示框
     showAutoModal = (content) => {
@@ -112,7 +117,7 @@ export default class Main extends Component {
                 )}
             >
                 <View style={styles.btnBody}>
-                    {this.btnItem(styles.btnStyle2, require('../images/home/order.png'), '订单管理')}
+                    {this.btnItem(styles.btnStyle2, require('../images/home/order.png'), '订单管理', 'Order')}
                     {this.btnItem(styles.btnStyle2, require('../images/home/return.png'), '退换/售后')}
                     {this.btnItem(null, require('../images/home/market.png'), '店铺设置')}
                     {this.btnItem(styles.btnStyle1, require('../images/home/password.png'), '修改密码')}
@@ -136,7 +141,9 @@ export default class Main extends Component {
             <TouchableOpacity activeOpacity={1} style={[].concat(styles.btnStyle, style)} onPress={()=>{
                 let navigation = this.props.navigation;
                 if(link) {
-                    navigation.navigate(link);
+                    navigation.navigate(link, {
+                        mToken: this.mToken,
+                    });
                 }else {
                     let content = (
                         <View style={styles.modelStyle}>

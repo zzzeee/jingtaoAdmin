@@ -13,7 +13,8 @@ import {
 	TouchableOpacity,
 } from 'react-native';
 
-import { Size, pixel, PX, Color, FontSize } from '../public/globalStyle';
+import { Size, pixel, } from '../public/globalStyle';
+import {Color} from '../public/theme';
 
 export default class AppHead extends Component {
 	//构造
@@ -69,21 +70,21 @@ export default class AppHead extends Component {
 
 var styles = StyleSheet.create({
 	topBox : {
-		height: PX.headHeight,
+		height: 50,
 		flexDirection : 'row',
 		justifyContent : 'center',
 		alignItems: 'center',
-		backgroundColor: '#fff',
+		backgroundColor: Color.mainColor,
         shadowColor: "#000",
         shadowOpacity: 0.1,
         shadowRadius: 0.5,
         shadowOffset: {"height": 0.5},
         elevation: 4,
 		borderBottomWidth: pixel,
-        borderBottomColor: Color.lavender,
+        borderBottomColor: Color.borderColor,
 	},
 	sideBox : {
-		height: PX.headHeight,
+		height: 50,
 		position: 'absolute',
 		justifyContent: 'center',
 		alignItems: 'center',
@@ -96,12 +97,13 @@ var styles = StyleSheet.create({
 	},
 	title : {
 		padding: 5,		//增大点击面积
-		color: Color.mainColor,
-		fontSize: FontSize.headFontSize,
-		fontWeight: FontSize.headFontWeight,
+		color: '#fff',
+		fontSize: 16,
+		fontWeight: '600',
 	},
 	backImg: {
-		width: PX.iconSize26,
-		height: PX.iconSize26,
+		width: 26,
+		height: 26,
+		tintColor: "#fff",
 	},
 });

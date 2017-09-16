@@ -29,9 +29,6 @@ class JingtaoApp extends Component {
     // 构造函数
     constructor(props) {
         super(props);
-        this.state = {
-            updatePage: false,
-        };
     }
 
     componentDidMount() {

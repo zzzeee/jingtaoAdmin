@@ -19,8 +19,7 @@ import Urls from '../../public/apiUrl';
 import { Size, PX, pixel, Color } from '../../public/globalStyle';
 import Lang, {str_replace} from '../../public/language';
 import ListFrame from '../../other/ListViewFrame';
-import OrderGood from '../../car/OrderGood';
-import PayOrder from '../../car/PayOrder';
+import OrderGood from './OrderGood';
 import AppHead from '../../public/AppHead';
 import OrderCancel from './OrderCancel';
 import ErrorAlert from '../../other/ErrorAlert';
@@ -269,17 +268,6 @@ export default class OrderDetail extends Component {
                         orderID={this.shopOrderNum}
                         hideWindow={this.hideCancelWindow}
                         cancelCallback={this.cancelCallback}
-                    />
-                    : null
-                }
-                {showPayModal?
-                    <PayOrder
-                        mToken={this.mToken}
-                        payMoney={this.actualTotal}
-                        orderNumber={this.shopOrderNum}
-                        visible={showPayModal}
-                        hidePayBox={this.hidePaymentBox}
-                        navigation={navigation}
                     />
                     : null
                 }

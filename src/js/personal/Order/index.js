@@ -114,6 +114,7 @@ export default class MyOrder extends Component {
     }
 
     getComponent = (id, val = null) => {
+        if(!this.mToken) return null;
         if(this.state.selIndex == id) {
             let str = '';
             switch(id) {
