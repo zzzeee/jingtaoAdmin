@@ -213,6 +213,11 @@ export default class OrderComponent extends Component {
                     obj.btns.push({
                         val: '立即发货',
                         red: false,
+                        fun: ()=>{
+                            navigation.navigate('LogisticsNumber', {
+                                mToken: mToken,
+                            });
+                        },
                     }, );
                     obj.text = '待发货';
                     break;

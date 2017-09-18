@@ -13,7 +13,8 @@ import {
 } from 'react-native';
 
 import PropTypes from 'prop-types';
-import { Size, Color, pixel } from '../public/globalStyle';
+import { Size, pixel } from '../public/globalStyle';
+import { Color } from '../public/theme';
 
 export default class InputText extends Component {
     // 默认参数
@@ -35,12 +36,12 @@ export default class InputText extends Component {
 	render() {
 		let {
             _ref_,
-            vText, 
-            defaultValue, 
-            pText, 
-            pcolor, 
-            onChange, 
-            endEditing, 
+            vText,
+            defaultValue,
+            pText,
+            pcolor,
+            onChange,
+            endEditing,
             submitEditing,
             style, 
             isPWD, 
@@ -77,11 +78,12 @@ export default class InputText extends Component {
 
 const styles = StyleSheet.create({
 	inputStyle : {
-        color : Color.lightBack,
+        padding: 0,
+        color : Color.mainFontColor,
         fontSize : 14,
         textAlignVertical: 'center',
         borderWidth: pixel,
-        borderColor: Color.lavender,
+        borderColor: Color.borderColor,
         borderRadius: 5,
     },
 });

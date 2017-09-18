@@ -47,7 +47,7 @@ class JingtaoApp extends Component {
                     }} />
                     : null
                 }
-                <View style={styles.container}>
+                <View style={styles.flex}>
                     <App />
                 </View>
             </View>
@@ -60,9 +60,5 @@ AppRegistry.registerComponent('jingtaoAdmin', () => JingtaoApp);
 const styles = StyleSheet.create({
     flex: {
         flex: 1,
-    },
-    container: {
-        flex: 1,
-        backgroundColor: Color.lightBgColor,
     },
 });

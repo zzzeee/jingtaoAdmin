@@ -139,6 +139,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-barcodescanner')
     compile project(':react-native-fetch-blob')
     compile project(':react-native-device-info')
     compile project(':jpush-react-native')
