@@ -13,7 +13,8 @@ import { StackNavigator } from 'react-navigation';
 import Init from './initpage';
 import Main from './main';
 import Login from './login';
-import Order from './personal/Order';
+import Order from './order';
+import OrderDetail from './order/OrderDetail';
 
 //模块调用, 方便统一修改
 const MyNavScren = ({ navigation, NavScreen }) => (
@@ -40,11 +41,17 @@ const OrderScreen = ({ navigation }) => (
     <MyNavScren navigation={navigation} NavScreen={Order} />
 );
 
+//订单详情
+const OrderDetailScreen = ({ navigation }) => (
+    <MyNavScren navigation={navigation} NavScreen={OrderDetail} />
+);
+
 const AppNavigator = StackNavigator({
     Init: {screen: InitScreen, },
     Login: {screen: LoginScreen, },
     Main: {screen: MainScreen, },
     Order: {screen: OrderScreen, },
+    OrderDetail: {screen: OrderDetailScreen, },
 }, {
     initialRouteName: 'Init',
     headerMode: 'none',

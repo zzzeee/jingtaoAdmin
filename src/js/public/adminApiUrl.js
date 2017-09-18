@@ -14,6 +14,8 @@ var urls = {
     checkUser: host + '/api/settled/LoginController/checkSettledMerchantLoginStatus',
     //基本信息
     shopBasicInfo: host + '/api/settled/BasicController/getBasicSettledMerchantInfo',
+    //获取订单列表
+    getOrderList: host + '/api/settled/SorderController/getSettledOrderList',
 };
 
 export default urls;

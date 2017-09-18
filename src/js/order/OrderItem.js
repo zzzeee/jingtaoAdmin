@@ -15,11 +15,10 @@ import {
 } from 'react-native';
 
 import PropTypes from 'prop-types';
-import Utils from '../../public/utils';
-import Urls from '../../public/apiUrl';
-import { Size, PX, pixel, Color } from '../../public/globalStyle';
-import Lang, {str_replace} from '../../public/language';
-import Nothing from '../../other/ListNothing';
+import Utils from '../public/utils';
+import { Size, pixel, } from '../public/globalStyle';
+import { Color } from '../public/theme';
+import Nothing from '../other/ListNothing';
 import OrderGood from './OrderGood';
 
 export default class OrderComponent extends Component {
@@ -69,20 +68,7 @@ export default class OrderComponent extends Component {
         return (
             <View style={styles.boxStyle}>
                 <View style={styles.rowStyle1}>
-                    <TouchableOpacity onPress={()=>navigation.navigate('Shop', {shopID: sid})} style={{
-                        padding: 5,
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                    }}>
-                        <Image source={require('../../../images/car/shophead.png')} style={{
-                            width: 26,
-                            height: 26,
-                        }} />
-                        <Text style={{
-                            color: Color.lightBack,
-                            fontSize: 14,
-                        }}>{sName}</Text>
-                    </TouchableOpacity>
+                    <Text style={styles.fontStyle4}>{'订单号: ' + orderNum}</Text>
                     <Text style={styles.fontStyle3}>{orderTitleBtns.text}</Text>
                 </View>
                 <View>
@@ -101,11 +87,11 @@ export default class OrderComponent extends Component {
                 <View style={styles.rowStyle2}>
                     <Text style={[styles.fontStyle1, {
                         marginRight: 15,
-                    }]}>{str_replace(Lang[Lang.default].totalProductNumberL, totalNum)}</Text>
+                    }]}>{'共计 ' + totalNum + ' 件商品'}</Text>
                     <Text style={styles.fontStyle1}>
-                        {Lang[Lang.default].total2 + ': '}
-                        <Text style={styles.fontStyle2}>{Lang[Lang.default].RMB + this.totalMoney}</Text>
-                        {str_replace(Lang[Lang.default].containPostage, freight)}
+                        合计： 
+                        <Text style={styles.fontStyle2}>{'¥' + this.totalMoney}</Text>
+                        {`(含邮费：${freight})`}
                     </Text>
                 </View>
                 <View style={styles.rowStyle2}>
@@ -118,11 +104,11 @@ export default class OrderComponent extends Component {
                                     this.notFinished();
                                 }
                             }} style={[styles.btnStyle, {
-                                borderColor: item.red ? Color.mainColor : Color.lightBack,
+                                borderColor: item.red ? Color.mainColor : Color.mainFontColor,
                             }]}>
                                 <Text style={{
                                     fontSize: 11,
-                                    color: item.red ? Color.mainColor : Color.lightBack,
+                                    color: item.red ? Color.mainColor : Color.mainFontColor,
                                 }}>{item.val}</Text>
                             </TouchableOpacity>
                         );
@@ -134,7 +120,7 @@ export default class OrderComponent extends Component {
 
     //联系客服/商家
     sellTelphone = () => {
-        Linking.openURL('tel: ' + Lang.telephone)
+        Linking.openURL('tel: 4000237333')
         .catch(err => console.error('调用电话失败！', err));
     };
 
@@ -194,13 +180,13 @@ export default class OrderComponent extends Component {
         let obj = {
             text: '',
             btns: [{
-                val: Lang[Lang.default].contactWaiter,
+                val: '联系境淘',
                 red: false,
                 fun: (soid)=>{
                     showAlert(
-                        Lang.telephone2,
+                        '客服号码: 400-023-7333',
                         that.sellTelphone,
-                        Lang[Lang.default].call
+                        '呼叫'
                     );
                 }
             }],
@@ -217,7 +203,7 @@ export default class OrderComponent extends Component {
         }
 
         if(statuid == 2) {
-            obj.text = Lang[Lang.default].shopClose;
+            obj.text = '交易关闭';
         }else if(payid == 1) {
             //已付款
             switch(statuid) {
@@ -225,19 +211,16 @@ export default class OrderComponent extends Component {
                 case 1:
                     //待发货
                     obj.btns.push({
-                        val: Lang[Lang.default].applyReturn,
+                        val: '立即发货',
                         red: false,
-                    });
-                    obj.text = Lang[Lang.default].daifahuo;
+                    }, );
+                    obj.text = '待发货';
                     break;
                 case 3:
                 case 5:
                     //待收货
                     obj.btns.push({
-                        val: Lang[Lang.default].applyReturn,
-                        red: false,
-                    }, {
-                        val: Lang[Lang.default].viewLogistics,
+                        val: '查看物流',
                         red: false,
                         fun: ()=>{
                             navigation.navigate('OrderLogistics', {
@@ -245,59 +228,36 @@ export default class OrderComponent extends Component {
                                 expressNum: that.expressNum,
                             });
                         },
-                    }, {
-                        val: Lang[Lang.default].confirmReceipt,
-                        red: true,
-                        fun: (soid)=>{
-                            showAlert(
-                                Lang[Lang.default].confirmReceipt2,
-                                ()=>{changeOrderStatu(
-                                    soid, 
-                                    4, 
-                                    Lang[Lang.default].successfulReceipt, 
-                                    null, 
-                                    that.totalMoney
-                                )}
-                            );
-                        }
                     });
-                    obj.text = Lang[Lang.default].daishouhuo;
+                    obj.text = '待收货';
                     break;
                 case 4:
                     //交易完成
-                    obj.btns.push({
-                        val: Lang[Lang.default].applySellAfter,
-                        red: false,
-                    });
-                    obj.text = Lang[Lang.default].transactionOk;
+                    obj.text = '交易完成';
                     break;
                 case 6:
-                    obj.text = Lang[Lang.default].applyReturning;
+                    obj.text = '申请退换中';
                     break;
                 case 7:
-                    obj.text = Lang[Lang.default].applyFail;
+                    obj.text = '申请失败';
                     break;
                 case 8:
-                    obj.text = Lang[Lang.default].applySuccess;
+                    obj.text = '退款成功';
                     break;
                 default:
-                    obj.text = Lang[Lang.default].cnknownState;
+                    obj.text = '未知状态';
                     break;
             }
         }else if(payid == 2) {
             //已退款
-            obj.text = Lang[Lang.default].isTuiKuan;
+            obj.text = '已退款';
         }else {
             //未付款
-            obj.text = Lang[Lang.default].noFuKuan;
+            obj.text = '未付款';
             obj.btns.push({
-                val: Lang[Lang.default].cancelOrder,
+                val: '取消订单',
                 red: false,
                 fun: showCancel,
-            }, {
-                val: Lang[Lang.default].immediatePayment,
-                red: true,
-                fun: (soid)=>clickPay(soid, that.totalMoney),
             });
         }
         return obj;
@@ -310,37 +270,41 @@ var styles = StyleSheet.create({
     },
     boxStyle: {
         backgroundColor: '#fff',
-        marginTop: PX.marginTB,
+        marginTop: 10,
     },
     rowStyle1: {
-        height: PX.rowHeight2,
+        height: 44,
         paddingLeft: 10,
-        paddingRight: PX.marginLR,
+        paddingRight: 15,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
     },
     rowStyle2: {
-        height: PX.rowHeight1,
-        marginLeft: PX.marginLR,
-        marginRight: PX.marginLR,
+        height: 50,
+        marginLeft: 15,
+        marginRight: 15,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'flex-end',
-        borderBottomWidth: 1,
-        borderBottomColor: Color.lavender,
+        borderBottomWidth: pixel,
+        borderBottomColor: Color.borderColor,
     },
     fontStyle1: {
         fontSize: 13,
-        color: Color.lightBack,
+        color: Color.mainFontColor,
     },
     fontStyle2: {
         fontSize: 14,
-        color: Color.red,
+        color: Color.redFontColor,
     },
     fontStyle3: {
         fontSize: 12,
-        color: Color.mainColor,
+        color: Color.redFontColor,
+    },
+    fontStyle4: {
+        fontSize: 13,
+        color: Color.grayFontColor,
     },
     btnStyle: {
         paddingLeft: 10,

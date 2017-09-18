@@ -1,7 +1,6 @@
 /**
- * 个人中心 - 我的订单
+ * 我的管理
  * @auther linzeyong
- * @date   2017.06.20
  */
 
 import React , { Component } from 'react';
@@ -14,9 +13,10 @@ import {
 } from 'react-native';
 
 import ScrollableTabView, {DefaultTabBar, } from 'react-native-scrollable-tab-view';
-import Lang, {str_replace, TABKEY} from '../../public/language';
-import { Size, Color, PX, pixel, FontSize } from '../../public/globalStyle';
-import AppHead from '../../public/AppHead';
+import Lang, {str_replace, TABKEY} from '../public/language';
+import { Size, pixel } from '../public/globalStyle';
+import { Color } from '../public/theme';
+import AppHead from '../public/AppHead';
 import OrderPage from './OrderPage';
 
 export default class MyOrder extends Component {
@@ -28,17 +28,17 @@ export default class MyOrder extends Component {
         };
         
         this.tabs = [{
-            title: Lang[Lang.default].comprehensive,
-            value: null,
-        }, {
-            title: Lang[Lang.default].daifukuan,
-            value: -1,
-        }, {
-            title: Lang[Lang.default].daifahuo,
+            title: '待发货',
             value: 1,
         }, {
-            title: Lang[Lang.default].daishouhuo,
+            title: '待付款',
+            value: -1,
+        }, {
+            title: '已发货',
             value: 3,
+        }, {
+            title: '全部订单',
+            value: null,
         }];
         this.mToken = null;
         this.listRefs = new Array(this.tabs.length);
@@ -71,9 +71,9 @@ export default class MyOrder extends Component {
         return (
             <View style={styles.flex}>
                 <AppHead
-                    title={Lang[Lang.default].myOrder}
+                    title='我的订单'
                     goBack={true}
-                    leftPress={()=>navigation.navigate('TabNav', {PathKey: TABKEY.personal})}
+                    navigation={navigation}
                     onPress={()=>{
                         if(this.listRefs[this.state.selIndex]) {
                             this.listRefs[this.state.selIndex].scrollToOffset({offset: 0, animated: true});
@@ -96,7 +96,7 @@ export default class MyOrder extends Component {
                         // 选中的文字颜色
                         tabBarActiveTextColor={Color.mainColor}
                         // 未选中的文字颜色
-                        tabBarInactiveTextColor={Color.lightBack}
+                        tabBarInactiveTextColor={Color.mainFontColor}
                         tabBarTextStyle={styles.tabTextStyle}
                         onChangeTab={(obj)=>this.setState({selIndex: obj.i,})}
                     >
@@ -119,16 +119,16 @@ export default class MyOrder extends Component {
             let str = '';
             switch(id) {
                 case 0:
-                    str = Lang[Lang.default].yourNotShopping;
+                    str = '这里没有订单';
                     break;
                 case 1:
-                    str = Lang[Lang.default].yourNotDFKgood;
+                    str = '这里没有订单';
                     break;
                 case 2:
-                    str = Lang[Lang.default].yourNotDFHgood;
+                    str = '这里没有订单';
                     break;
                 case 3:
-                    str = Lang[Lang.default].yourNotDSHgood;
+                    str = '这里没有订单';
                     break;
             }
             return <OrderPage 
@@ -152,10 +152,10 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         borderTopWidth: pixel,
-        borderTopColor: Color.lavender,
+        borderTopColor: Color.borderColor,
     },
     tabBarStyle: {
-        height: PX.rowHeight2,
+        height: 44,
         backgroundColor: 'transparent',
     },
     tabUnderLine: {

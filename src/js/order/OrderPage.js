@@ -1,7 +1,6 @@
 /**
  * 订单框架
  * @auther linzeyong
- * @date   2017.06.23
  */
 
 import React , { Component } from 'react';
@@ -15,16 +14,17 @@ import {
 } from 'react-native';
 
 import PropTypes from 'prop-types';
-import Utils from '../../public/utils';
-import Urls from '../../public/apiUrl';
-import { Size, PX, pixel, Color } from '../../public/globalStyle';
-import Lang, {str_replace} from '../../public/language';
-import Nothing from '../../other/ListNothing';
+import Utils from '../public/utils';
+import Urls from '../public/adminApiUrl';
+import { Size, pixel, } from '../public/globalStyle';
+import { Color } from '../public/theme';
+import Lang, {str_replace} from '../public/language';
+import Nothing from '../other/ListNothing';
 import OrderItem from './OrderItem';
-import { EndView } from '../../other/publicEment';
+import { EndView } from '../other/publicEment';
 import OrderCancel from './OrderCancel';
-import ErrorAlert from '../../other/ErrorAlert';
-import AlertMoudle from '../../other/AlertMoudle';
+import ErrorAlert from '../other/ErrorAlert';
+import AlertMoudle from '../other/AlertMoudle';
 
 export default class OrderComponent extends Component {
     // 默认参数
@@ -70,10 +70,10 @@ export default class OrderComponent extends Component {
         if(mToken && !this.loadMoreLock) {
             this.loadMoreLock = true;
             Utils.fetch(Urls.getOrderList, 'post', {
-                mToken: mToken,
+                sToken: mToken,
                 oStatus: orderType ? orderType : '',
-                pPage: this.page,
-                pPerNum: this.pageNumber,
+                soPage: this.page,
+                soPerNum: this.pageNumber,
             }, (result)=>{
                 console.log(result);
                 let obj = {
@@ -143,9 +143,9 @@ export default class OrderComponent extends Component {
             rightText: rText || Lang[Lang.default].determine,
             leftClick: ()=>this.setState({deleteAlert: false,}),
             rightClick: rclick,
-            leftColor: Color.lightBack,
+            leftColor: Color.mainFontColor,
             leftBgColor: '#fff',
-            rightColor: Color.lightBack,
+            rightColor: Color.mainFontColor,
             rightBgColor: '#fff',
         };
         this.setState({deleteAlert: true,});

@@ -13,8 +13,8 @@ import {
     TouchableOpacity,
 } from 'react-native';
 
-import { Size, Color, PX, pixel, FontSize } from '../../public/globalStyle';
-import Lang, {str_replace} from '../../public/language';
+import { Size, pixel, } from '../public/globalStyle';
+import { Color } from '../public/theme';
 
 export default class OrderGood extends Component {
     render() {
@@ -22,7 +22,7 @@ export default class OrderGood extends Component {
         if(!good) return null;
         let goodImgUrl = good.gPicture || null;
         if(!goodImgUrl) goodImgUrl = good.gThumbPic || null;
-        let goodImg = goodImgUrl ? {uri: goodImgUrl} : require('../../../images/empty.jpg');
+        let goodImg = goodImgUrl ? {uri: goodImgUrl} : require('../../images/empty.jpg');
         let goodName = good.gName || null;
         let goodAttr = good.mcAttr || null;
         let goodPrice = parseFloat(good.gPrice) || 0;
@@ -34,16 +34,16 @@ export default class OrderGood extends Component {
                 <Image source={goodImg} style={styles.goodImageStyle} />
                 <View style={styles.goodRightBox}>
                     <Text style={styles.goodNameStyle}>{goodName}</Text>
-                    <Text style={styles.goodAttrStyle}>{Lang[Lang.default].specification + ': ' + goodAttr}</Text>
+                    <Text style={styles.goodAttrStyle}>{'规格: ' + goodAttr}</Text>
                     <View style={[styles.rowViewStyle, {justifyContent: 'space-between'}]}>
                         <View style={styles.rowViewStyle}>
-                            <Text style={styles.goodPriceStyle}>{Lang[Lang.default].RMB + goodPrice}</Text>
+                            <Text style={styles.goodPriceStyle}>{'¥' + goodPrice}</Text>
                             <Text style={[styles.goodAttrStyle, {
                                 paddingRight: 10,
                                 textDecorationLine: 'line-through',
                             }]}>{martPrice}</Text>
                             {isLimit ?
-                                <Text style={styles.timeLimit}>{Lang[Lang.default].timeLimit}</Text>
+                                <Text style={styles.timeLimit}>限时</Text>
                                 : null
                             }
                         </View>
@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
     goodItemBox: {
         flexDirection: 'row',
         alignItems: 'center',
-        padding: PX.marginLR,
+        padding: 15,
         marginBottom: 3,
         backgroundColor: '#F3F4F8',
     },
@@ -82,15 +82,15 @@ const styles = StyleSheet.create({
     },
     goodNameStyle: {
         fontSize: 14,
-        color: Color.lightBack,
+        color: Color.mainFontColor,
     },
     goodAttrStyle: {
         fontSize: 12,
-        color: Color.gainsboro,
+        color: Color.grayFontColor,
     },
     goodPriceStyle: {
         fontSize: 16,
-        color: Color.red,
+        color: Color.redFontColor,
         paddingRight: 10,
     },
     timeLimit: {
@@ -101,6 +101,6 @@ const styles = StyleSheet.create({
         borderRadius: 2,
         color: '#fff',
         fontSize: 12,
-        backgroundColor: Color.red,
+        backgroundColor: Color.redFontColor,
     },
 });

@@ -13,13 +13,13 @@ import {
     TouchableOpacity,
 } from 'react-native';
 
-import Utils from '../../public/utils';
-import Urls from '../../public/apiUrl';
-import { Size, PX, pixel, Color } from '../../public/globalStyle';
-import Lang, {str_replace} from '../../public/language';
-import ListFrame from '../../other/ListViewFrame';
+import Utils from '../public/utils';
+import Urls from '../public/apiUrl';
+import { Size, PX, pixel, Color } from '../public/globalStyle';
+import Lang, {str_replace} from '../public/language';
+import ListFrame from '../other/ListViewFrame';
 import { NavigationActions } from 'react-navigation';
-import AppHead from '../../public/AppHead';
+import AppHead from '../public/AppHead';
 
 export default class OrderLogistics extends Component {
     constructor(props) {
@@ -119,8 +119,8 @@ export default class OrderLogistics extends Component {
                     <View style={styles.expressDataBox}>
                         {expressData.map((item, index)=>{
                             let img = index == 0 ? 
-                                require('../../../images/personal/red_circle.png') :
-                                require('../../../images/personal/gray_circle.png');
+                                require('../../images/personal/red_circle.png') :
+                                require('../../images/personal/gray_circle.png');
                             let content = item.context || '';
                             let time = item.time || '';
                             return (
@@ -145,7 +145,7 @@ export default class OrderLogistics extends Component {
                         })}
                     </View>:
                     <View style={styles.centerStyle}>
-                        <Image source={require('../../../images/home/no_result.png')} style={styles.centerImage}>
+                        <Image source={require('../../images/home/no_result.png')} style={styles.centerImage}>
                             <Text numberOfLines={1} style={styles.centerText}>{Lang[Lang.default].notExpressData}</Text>
                         </Image>
                     </View>

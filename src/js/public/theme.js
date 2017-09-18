@@ -14,6 +14,8 @@ export const Color = {
     borderColor: '#9B9B9B',
     mainFontColor: '#4A4A4A',
     mainColor: '#2B99F7',
+    grayFontColor: '#9B9B9B',
+    redFontColor: '#EB5144',
 };
 
 //生意宝APP主题1

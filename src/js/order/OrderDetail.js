@@ -14,16 +14,16 @@ import {
     Linking,
 } from 'react-native';
 
-import Utils from '../../public/utils';
-import Urls from '../../public/apiUrl';
-import { Size, PX, pixel, Color } from '../../public/globalStyle';
-import Lang, {str_replace} from '../../public/language';
-import ListFrame from '../../other/ListViewFrame';
+import Utils from '../public/utils';
+import Urls from '../public/apiUrl';
+import { Size, PX, pixel, Color } from '../public/globalStyle';
+import Lang, {str_replace} from '../public/language';
+import ListFrame from '../other/ListViewFrame';
 import OrderGood from './OrderGood';
-import AppHead from '../../public/AppHead';
+import AppHead from '../public/AppHead';
 import OrderCancel from './OrderCancel';
-import ErrorAlert from '../../other/ErrorAlert';
-import AlertMoudle from '../../other/AlertMoudle';
+import ErrorAlert from '../other/ErrorAlert';
+import AlertMoudle from '../other/AlertMoudle';
 
 export default class OrderDetail extends Component {
     constructor(props) {
@@ -241,7 +241,7 @@ export default class OrderDetail extends Component {
                                 Lang[Lang.default].call
                             );
                         }} style={styles.btnStyle2}>
-                            <Image style={styles.custemIcon} source={require('../../../images/product/custem_center.png')} />
+                            <Image style={styles.custemIcon} source={require('../../images/product/custem_center.png')} />
                             <Text style={styles.fontStyle3}>客服</Text>
                         </TouchableOpacity>
                         {this.titleBtns.btns2.length ?
@@ -333,7 +333,7 @@ export default class OrderDetail extends Component {
                 <View style={styles.sessionBox}>
                     <View style={styles.grayBox}>
                         <Image 
-                            source={require('../../../images/car/payok_bg.jpg')} 
+                            source={require('../../images/car/payok_bg.jpg')} 
                             resizeMode="stretch" 
                             style={styles.topBoxC1Img}
                         >
@@ -363,7 +363,7 @@ export default class OrderDetail extends Component {
                                 }]}>{expressData.data[0].time || ''}</Text>
                             </View>
                             <View style={styles.moreIcon}>
-                                <Image source={require('../../../images/list_more.png')} style={styles.moreIcon} />
+                                <Image source={require('../../images/list_more.png')} style={styles.moreIcon} />
                             </View>
                         </TouchableOpacity> :
                         (statuid == 3 ?
@@ -390,7 +390,7 @@ export default class OrderDetail extends Component {
                             flexDirection: 'row',
                             alignItems: 'center',
                         }}>
-                            <Image source={require('../../../images/car/shophead.png')} style={{
+                            <Image source={require('../../images/car/shophead.png')} style={{
                                 width: 26,
                                 height: 26,
                             }} />
@@ -539,7 +539,7 @@ export default class OrderDetail extends Component {
         if(statuid == 2) {
             obj.text1 = '订单关闭';
             obj.text2 = '订单已取消';
-            obj.image = require('../../../images/car/order_close.png');
+            obj.image = require('../../images/car/order_close.png');
         }else if(payid == 1) {
             //已付款
             switch(statuid) {
@@ -551,7 +551,7 @@ export default class OrderDetail extends Component {
                     obj.btns1.push({
                         val: '申请退换',
                     });
-                    obj.image = require('../../../images/car/payok_right.png');
+                    obj.image = require('../../images/car/payok_right.png');
                     break;
                 case 3:
                 case 5:
@@ -577,7 +577,7 @@ export default class OrderDetail extends Component {
                             that.showAlertMoudle(Lang[Lang.default].confirmReceipt2, that.goodsReceipt);
                         },
                     });
-                    obj.image = require('../../../images/car/order_yfh.png');
+                    obj.image = require('../../images/car/order_yfh.png');
                     break;
                 case 4:
                     //交易完成
@@ -585,7 +585,7 @@ export default class OrderDetail extends Component {
                     obj.btns1.push({
                         val: '申请售后',
                     });
-                    obj.image = require('../../../images/car/order_finish.png');
+                    obj.image = require('../../images/car/order_finish.png');
                     break;
                 case 6:
                     obj.text1 = Lang[Lang.default].applyReturning;
@@ -617,7 +617,7 @@ export default class OrderDetail extends Component {
                 bgColor: Color.mainColor,
                 fun: ()=>that.setState({showPayModal: true,}),
             });
-            obj.image = require('../../../images/car/order_dfk.png');
+            obj.image = require('../../images/car/order_dfk.png');
         }
         return obj;
     };

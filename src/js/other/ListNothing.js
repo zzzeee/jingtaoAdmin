@@ -13,33 +13,18 @@ import {
     TouchableOpacity,
 } from 'react-native';
 
-import { Size, PX, pixel, Color } from '../public/globalStyle';
-import Lang, {str_replace} from '../public/language';
-import ListFrame from './ListViewFrame';
+import { Size, pixel, } from '../public/globalStyle';
+import { Color } from '../public/theme';
 
 export default class ListNothing extends Component {
-    listHeadView = () => {
+    render() {
         let { text, boxStyle, imageStyle, txtStyle, image } = this.props;
-        let img = image ? image : require('../../images/home/no_result.png');
+        let img = image ? image : require('../../images/order/no_result.png');
         return (
             <View style={[styles.centerStyle, boxStyle]}>
-                <Image source={img} style={[styles.centerImage, imageStyle]}>
-                    <Text numberOfLines={1} style={[styles.centerText, txtStyle]}>{text}</Text>
-                </Image>
+                <Image source={img} style={[styles.centerImage, imageStyle]} />
+                <Text numberOfLines={1} style={[styles.centerText, txtStyle]}>{text}</Text>
             </View>
-        );
-    };
-
-    render() {
-        let { navigation, getListEment, get_list_ref, } = this.props;
-        return (
-            <ListFrame
-                listStyle={{backgroundColor: '#fff',}}
-                listHead={this.listHeadView()}
-                navigation={navigation}
-                getListEment={getListEment}
-                get_list_ref={get_list_ref}
-            />
         );
     }
 }
@@ -49,19 +34,17 @@ var styles = StyleSheet.create({
         flex: 1,
     },
     centerStyle: {
-        height: 245,
-        backgroundColor: Color.lightGrey,
+        flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
     },
     centerImage: {
-        height: 97,
-        width: 185,
-        alignItems: 'center',
-        justifyContent: 'flex-end',
+        height: 110,
+        width: 110,
     },
     centerText: {
         fontSize: 14,
-        color: Color.gainsboro2,
+        color: '#72A5F6',
+        marginTop: 10,
     },
 });

@@ -16,10 +16,10 @@ import {
 } from 'react-native';
 
 import PropTypes from 'prop-types';
-import Utils from '../../public/utils';
-import Urls from '../../public/apiUrl';
-import { Size, PX, pixel, Color } from '../../public/globalStyle';
-import Lang, {str_replace} from '../../public/language';
+import Utils from '../public/utils';
+import Urls from '../public/apiUrl';
+import { Size, PX, pixel, Color } from '../public/globalStyle';
+import Lang, {str_replace} from '../public/language';
 
 export default class OrderCancel extends Component {
     // 默认参数
@@ -80,7 +80,7 @@ export default class OrderCancel extends Component {
                         <View style={styles.fristRow}>
                             <Text style={styles.txtStyle1}>{Lang[Lang.default].receiveCoupon}</Text>
                             <TouchableOpacity onPress={hideWindow} style={styles.rowCloseBox}>
-                                <Image style={styles.rowCloseImg} source={require('../../../images/close.png')} />
+                                <Image style={styles.rowCloseImg} source={require('../../images/close.png')} />
                             </TouchableOpacity>
                         </View>
                         <ScrollView>
@@ -89,8 +89,8 @@ export default class OrderCancel extends Component {
                             </View>
                             {this.cancelTexts.map((item, index) => {
                                 let img = this.state.select == index ?
-                                    require('../../../images/car/select.png') :
-                                    require('../../../images/car/no_select.png');
+                                    require('../../images/car/select.png') :
+                                    require('../../images/car/no_select.png');
                                 return (
                                     <TouchableOpacity key={index} onPress={()=>{
                                         this.setState({select: index,});

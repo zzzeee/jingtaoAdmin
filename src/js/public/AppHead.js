@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 
 import { Size, pixel, } from '../public/globalStyle';
-import {Color} from '../public/theme';
+import { Color } from '../public/theme';
 
 export default class AppHead extends Component {
 	//构造
