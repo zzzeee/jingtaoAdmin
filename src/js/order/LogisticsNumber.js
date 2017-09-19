@@ -87,6 +87,7 @@ const styles = StyleSheet.create({
     },
     inputStyle: {
         height: 40,
+        paddingHorizontal: 8,
     },
     inputIcon: {
         position: 'absolute',

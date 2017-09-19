@@ -11,11 +11,12 @@ import {
     Text,
     Image,
     TouchableOpacity,
+    ScrollView,
     Linking,
 } from 'react-native';
 
 import Utils from '../public/utils';
-import Urls from '../public/apiUrl';
+import Urls from '../public/adminApiUrl';
 import { Size, PX, pixel, Color } from '../public/globalStyle';
 import Lang, {str_replace} from '../public/language';
 import ListFrame from '../other/ListViewFrame';
@@ -72,8 +73,8 @@ export default class OrderDetail extends Component {
     //获取订单信息
     getOrderInfo = () => {
         if(this.mToken && this.shopOrderNum) {
-            Utils.fetch(Urls.getOrderDetails, 'post', {
-                mToken: this.mToken,
+            Utils.fetch(Urls.getOrderDetail, 'post', {
+                sToken: this.mToken,
                 soID: this.shopOrderNum,
             }, (result)=>{
                 console.log(result);
@@ -223,12 +224,7 @@ export default class OrderDetail extends Component {
                     {load_or_error ?
                         load_or_error :
                         (orders ?
-                            <ListFrame
-                                listHead={this.orderComponent()}
-                                navigation={navigation}
-                                get_list_ref={(ref)=>this.ref_flatList=ref}
-                            />
-                            : null
+                            this.orderComponent() : null
                         )
                     }
                 </View>
@@ -329,59 +325,35 @@ export default class OrderDetail extends Component {
         this.actualTotal = (totalMoney - oIntegral - oScoupon).toFixed(2);
         if(this.actualTotal < 0) this.actualTotal = 0;
         return (
-            <View style={styles.container}>
+            <ScrollView contentContainerStyle={styles.container}>
                 <View style={styles.sessionBox}>
-                    <View style={styles.grayBox}>
-                        <Image 
-                            source={require('../../images/car/payok_bg.jpg')} 
-                            resizeMode="stretch" 
-                            style={styles.topBoxC1Img}
-                        >
-                            <View style={styles.topBoxC1ImgLeft}>
-                                <Text style={styles.topBoxC1Text1}>{this.titleBtns.text1}</Text>
-                                {this.titleBtns.text2 ?
-                                    <Text style={styles.topBoxC1Text2}>{this.titleBtns.text2}</Text>
-                                    : null
-                                }
-                            </View>
+                    <View style={styles.bgboxStyle} />
+                    <View style={styles.bgboxBody}>
+                        <View style={styles.bgboxBodyTop}>
                             {this.titleBtns.image ?
-                                <Image source={this.titleBtns.image} resizeMode="stretch" style={styles.topBoxC1ImgRight} />
+                                <Image source={this.titleBtns.image} resizeMode="stretch" style={styles.topBoxLeftImg} />
                                 : null
                             }
-                        </Image>
-                    </View>
-                    {expressData.data && expressData.data[0] ?
-                        <TouchableOpacity style={styles.expressDataBox} onPress={()=>{
-                            navigation.navigate('OrderLogistics', {
-                                Logistics: expressData,
-                            });
-                        }}>
-                            <View style={{width: Size.width - 30 - 26 - 10}}>
-                                <Text numberOfLines={2} style={styles.fontStyle5}>{expressData.data[0].context || ''}</Text>
-                                <Text numberOfLines={1} style={[styles.fontStyle6, {
-                                    paddingTop: 10,
-                                }]}>{expressData.data[0].time || ''}</Text>
+                            <View>
+                                <Text style={styles.bgboxBodyTopText1}>
+                                    {this.titleBtns.text1}
+                                    {this.titleBtns.text2 ?
+                                        <Text style={styles.bgboxBodyTopText2}>{this.titleBtns.text2}</Text>
+                                        : null
+                                    }
+                                </Text>
                             </View>
-                            <View style={styles.moreIcon}>
-                                <Image source={require('../../images/list_more.png')} style={styles.moreIcon} />
-                            </View>
-                        </TouchableOpacity> :
-                        (statuid == 3 ?
-                            <View style={styles.rowStyle3}>
-                                <Text style={styles.fontStyle5}>暂无物流信息</Text>
-                            </View>
-                            : null
-                        )  
-                    }
-                    <View style={styles.addressBox}>
-                        <View style={styles.rowStyle}>
-                            <Text style={[styles.fontStyle1, {paddingRight: 20}]}>{Lang[Lang.default].consignee + ': ' + name}</Text>
-                            <Text style={styles.fontStyle1}>{Lang[Lang.default].iphone + ': ' + phone}</Text>
                         </View>
                         <View>
-                            <Text numberOfLines={2} style={styles.fontStyle1}>{Lang[Lang.default].address + ': ' + area + address}</Text>
+                            <Text></Text>
+                            <Text></Text>
                         </View>
+                        <View style={styles.leftCircular} />
+                        <View style={styles.rightCircular} />
+                        <View style={styles.bottomCircular} />
+                        <View style={styles.bgboxLineStyle} />
                     </View>
+                    <View style={styles.bgboxBodyTopFloat} />
                 </View>
                 <View style={styles.sessionBox}>
                     <View style={styles.rowStyle1}>
@@ -442,7 +414,7 @@ export default class OrderDetail extends Component {
                         : null
                     }
                 </View>
-            </View>
+            </ScrollView>
         )
     };
 
@@ -538,29 +510,23 @@ export default class OrderDetail extends Component {
         
         if(statuid == 2) {
             obj.text1 = '订单关闭';
-            obj.text2 = '订单已取消';
-            obj.image = require('../../images/car/order_close.png');
+            obj.text2 = '用户取消订单';
+            obj.image = require('../../images/order/order_finish.png');
         }else if(payid == 1) {
             //已付款
             switch(statuid) {
                 case 0:
                 case 1:
                     //待发货
-                    obj.text1 = '付款成功';
-                    obj.text2 = '您的宝贝马上就要出仓了';
-                    obj.btns1.push({
-                        val: '申请退换',
-                    });
-                    obj.image = require('../../images/car/payok_right.png');
+                    obj.text1 = '等待商家发货';
+                    obj.text2 = '';
+                    obj.image = require('../../images/order/payok_right.png');
                     break;
                 case 3:
                 case 5:
                     //待收货
-                    obj.text1 = '商品已发货';
+                    obj.text1 = '等待用户收货';
                     obj.text2 = expirationDate + '后将自动确认收货';
-                    obj.btns1.push({
-                        val: '申请退换',
-                    });
                     obj.btns2.push({
                         val: '查看物流',
                         bgColor: Color.orange,
@@ -577,15 +543,12 @@ export default class OrderDetail extends Component {
                             that.showAlertMoudle(Lang[Lang.default].confirmReceipt2, that.goodsReceipt);
                         },
                     });
-                    obj.image = require('../../images/car/order_yfh.png');
+                    obj.image = require('../../images/order/order_yfh.png');
                     break;
                 case 4:
                     //交易完成
                     obj.text1 = '交易成功';
-                    obj.btns1.push({
-                        val: '申请售后',
-                    });
-                    obj.image = require('../../images/car/order_finish.png');
+                    obj.image = require('../../images/order/order_finish.png');
                     break;
                 case 6:
                     obj.text1 = Lang[Lang.default].applyReturning;
@@ -605,19 +568,14 @@ export default class OrderDetail extends Component {
             obj.text1 = '订单' + Lang[Lang.default].isTuiKuan;
         }else {
             //未付款
-            obj.text1 = '您还未付款';
+            obj.text1 = '等待用户付款';
             obj.text2 = '订单将在' + expirationDate + '后自动关闭';
             obj.btns2.push({
                 val: '取消订单',
                 bgColor: Color.orange,
                 fun: that.showCancelWindow,
             });
-            obj.btns2.push({
-                val: '立即付款',
-                bgColor: Color.mainColor,
-                fun: ()=>that.setState({showPayModal: true,}),
-            });
-            obj.image = require('../../images/car/order_dfk.png');
+            obj.image = require('../../images/order/order_dfk.png');
         }
         return obj;
     };
@@ -629,7 +587,8 @@ var styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        marginTop: PX.marginTB,
+        paddingTop: PX.marginTB,
+        backgroundColor: '#ccc',
     },
     sessionBox: {
         marginBottom: PX.marginTB,
@@ -734,31 +693,81 @@ var styles = StyleSheet.create({
     grayBox: {
         backgroundColor: Color.lightGrey,
     },
-    topBoxC1Img: {
-        width: Size.width,
-        height: 120,
-        flexDirection : 'row',
-        justifyContent: 'space-between',
+    bgboxStyle: {
+        height: 20,
+        borderWidth: 3,
+        borderColor: '#85BDFF',
+        backgroundColor: '#A0CCFF',
+        borderRadius: 10,
+    },
+    bgboxBody: {
+        height: 138,
+        marginLeft: 8,
+        marginRight: 8,
+        justifyContent: 'center',
+        backgroundColor: '#fff',
+    },
+    bgboxBodyTop: {
+        flexDirection: 'row',
         alignItems: 'center',
     },
-    topBoxC1ImgLeft: {
-        paddingLeft: 20,
-        maxWidth: Size.width - 20 - 20 - 115,
-        backgroundColor: 'transparent',
-    },
-    topBoxC1Text1: {
-        fontSize: 20,
-        color: '#fff',
-    },
-    topBoxC1Text2: {
-        fontSize: 13,
-        color: 'rgba(255, 255, 255, .7)',
-        paddingTop: 6,
-    },
-    topBoxC1ImgRight: {
-        width: 115,
-        height: 86,
+    topBoxLeftImg: {
+        marginLeft: 30,
+        width: 40,
+        height: 40,
         marginRight: 20,
+    },
+    bgboxBodyTopText1: {
+        fontSize: 14,
+        color: '#9B9B9B',
+        paddingLeft: 15,
+    },
+    bgboxBodyTopText2: {
+        fontSize: 11
+    },
+    leftCircular: {
+        width: 12,
+        height: 12,
+        borderRadius: 6,
+        position: 'absolute',
+        backgroundColor: '#ccc',
+        left: -6,
+        top: 6,
+    },
+    rightCircular: {
+        width: 12,
+        height: 12,
+        borderRadius: 6,
+        position: 'absolute',
+        backgroundColor: '#ccc',
+        right: -6,
+        top: 6,
+    },
+    bgboxLineStyle: {
+        position: 'absolute',
+        width: Size.width - 36,
+        borderBottomWidth: 1,
+        borderBottomColor: '#ccc',
+        borderStyle: 'dashed',
+        left: 10,
+        top: 12,
+    },
+    bottomCircular: {
+        width: 20,
+        height: 20,
+        borderRadius: 10,
+        position: 'absolute',
+        backgroundColor: '#ccc',
+        bottom: -10,
+        left: Size.width / 2 - 10,
+    },
+    bgboxBodyTopFloat: {
+        position: 'absolute',
+        left: 8,
+        right: 8,
+        top: 3,
+        height: 23,
+        backgroundColor: 'rgba(255,255,255,0.7)',
     },
     expressDataBox: {
         flexDirection : 'row',

@@ -8,10 +8,14 @@ import {
     StyleSheet,
     Text,
     Vibration,
-    View
+    View,
+    Image,
+    TouchableOpacity,
 } from 'react-native';
 
 import BarcodeScanner from 'react-native-barcodescanner';
+import { Size, pixel } from '../public/globalStyle';
+import { Color } from '../public/theme';
 
 export default class Barcode extends Component {
     constructor(props) {
@@ -52,7 +56,17 @@ export default class Barcode extends Component {
                     cameraType={this.state.cameraType}
                 />
                 <View style={styles.statusBar}>
-                    <Text style={styles.statusBarText}>{this.state.text}</Text>
+                    <Text style={styles.statusBarText}>请将二维码对准扫描框</Text>
+                    <View style={styles.iconBox}>
+                        <TouchableOpacity style={styles.iconItem}>
+                            <Image source={require('../../images/order/inputOrderNumber.png')} style={styles.iconStyle} />
+                            <Text style={styles.iconText}>输入快递单号</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.iconItem}>
+                            <Image source={require('../../images/order/Flashlight.png')} style={styles.iconStyle} />
+                            <Text style={styles.iconText}>打开手电筒</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             </View>
         );
@@ -61,19 +75,44 @@ export default class Barcode extends Component {
 
 const styles = StyleSheet.create({
     container: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'transparent',
+        flex: 1,
     },
     BarcodeScanner: {
-        width: 200,
-        height: 200,
+        // width: 220,
+        // height: 220,
+        flex: 1,
     },
     statusBar: {
         alignItems: 'center',
-        justifyContent: 'center',
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        bottom: 0,
     },
     statusBarText: {
-        fontSize: 20,
+        fontSize: 12,
+        color: Color.grayFontColor,
+        marginTop: 10,
+    },
+    iconBox: {
+        width: Size.width,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-around',
+        marginTop: 40,
+        marginBottom: 40,
+    },
+    iconItem: {
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    iconStyle: {
+        width: 50,
+        height: 55,
+    },
+    iconText: {
+        marginTop: 10,
+        fontSize: 13,
+        color: '#fff',
     },
 });

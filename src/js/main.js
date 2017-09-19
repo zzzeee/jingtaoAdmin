@@ -141,9 +141,11 @@ export default class Main extends Component {
             <TouchableOpacity activeOpacity={1} style={[].concat(styles.btnStyle, style)} onPress={()=>{
                 let navigation = this.props.navigation;
                 if(link) {
-                    navigation.navigate(link, {
-                        mToken: this.mToken,
-                    });
+                    if(this.mToken && navigation) {
+                        navigation.navigate(link, {
+                            mToken: this.mToken,
+                        });
+                    }
                 }else {
                     let content = (
                         <View style={styles.modelStyle}>
