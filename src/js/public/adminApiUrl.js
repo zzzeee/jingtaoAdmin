@@ -22,6 +22,8 @@ var urls = {
     getExpressInfo: host + '/api/settled/SorderController/getShopOrderExpressByExpressNum',
     //商家发货
     shopDeliverGoods: host + '/api/settled/SorderController/shopOrderExpressNumInsdert',
+    //添加极光ID
+    addJiGuangID: host + '/api/settled/BasicController/shopPushUniqueIDSave',
 };
 
 export default urls;

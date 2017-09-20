@@ -20,50 +20,65 @@ import { Color } from '../public/theme';
 export default class Barcode extends Component {
     constructor(props) {
         super(props);
-
         this.state = {
-            barcode: '',
             cameraType: 'back',
-            text: 'Scan Barcode',
             torchMode: 'off',
-            type: '',
         };
+        this.barcode = null;
+        this.bartype = null;
+        this.params = null;
     }
 
+    componentWillMount() {
+        this.initDatas();
+    }
+
+    //初始化数据
+    initDatas = () => {
+        let { navigation } = this.props;
+        if(navigation && navigation.state && navigation.state.params) {
+            this.params = navigation.state.params || {};
+        }
+    };
+
     barcodeReceived(e) {
-        if (e.data !== this.state.barcode || e.type !== this.state.type) {
+        if (e.data !== this.barcode || e.type !== this.bartype) {
             Vibration.vibrate();
+            this.barcode = e.data;
+            this.bartype = e.type;
             console.log(e);
-            this.setState({
-                barcode: e.data,
-                text: `${e.data} (${e.type})`,
-                type: e.type,
-            }, ()=>{
-                this.props.navigation.navigate('Order', {
-                    number: e.data,
-                });
-            });
+            let obj = Object.assign({
+                logistyNumber: e.data,
+            }, this.params);
+            this.props.navigation.navigate('LogisticsNumber', obj);
         }
     }
 
     render() {
+        let { cameraType, torchMode } = this.state;
+        let model = torchMode == 'off' ? 'on' : 'off';
+        let image = torchMode == 'off' ? require('../../images/order/Flashlight.png') : require('../../images/order/Flashlight2.png');
         return (
             <View style={styles.container}>
                 <BarcodeScanner
                     onBarCodeRead={this.barcodeReceived.bind(this)}
                     style={styles.BarcodeScanner}
-                    torchMode={this.state.torchMode}
-                    cameraType={this.state.cameraType}
+                    torchMode={torchMode}
+                    cameraType={cameraType}
                 />
                 <View style={styles.statusBar}>
                     <Text style={styles.statusBarText}>请将二维码对准扫描框</Text>
                     <View style={styles.iconBox}>
-                        <TouchableOpacity style={styles.iconItem}>
-                            <Image source={require('../../images/order/inputOrderNumber.png')} style={styles.iconStyle} />
-                            <Text style={styles.iconText}>输入快递单号</Text>
+                        <TouchableOpacity style={styles.iconItem} onPress={()=>{
+                            this.props.navigation.goBack(null);
+                        }}>
+                            <Image source={require('../../images/order/menu.png')} style={styles.iconStyle} />
+                            <Text style={styles.iconText}>返回</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.iconItem}>
-                            <Image source={require('../../images/order/Flashlight.png')} style={styles.iconStyle} />
+                        <TouchableOpacity style={styles.iconItem} onPress={()=>{
+                            this.setState({torchMode: model});
+                        }}>
+                            <Image source={image} style={styles.iconStyle} />
                             <Text style={styles.iconText}>打开手电筒</Text>
                         </TouchableOpacity>
                     </View>
@@ -109,6 +124,10 @@ const styles = StyleSheet.create({
     iconStyle: {
         width: 50,
         height: 55,
+    },
+    iconStyle2: {
+        width: 30,
+        height: 30,
     },
     iconText: {
         marginTop: 10,

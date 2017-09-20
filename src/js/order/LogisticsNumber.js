@@ -12,6 +12,7 @@ import {
     ScrollView,
     RefreshControl,
     TouchableOpacity,
+    DeviceEventEmitter,
 } from 'react-native';
 
 import Toast from 'react-native-root-toast';
@@ -130,6 +131,7 @@ export default class LogisticsNumber extends Component {
                 if(result && result.sMessage) this.showToast(result.sMessage);
                 if(result && result.sTatus == 1) {
                     this.params.selectIndex = 2;
+                    this.params.isRefresh = true;
                     let _backTo = this.params.backTo || 'Order';
                     this.props.navigation.navigate(_backTo, this.params);
                 }
@@ -149,6 +151,10 @@ export default class LogisticsNumber extends Component {
                     title='发货页'
                     goBack={true}
                     navigation={navigation}
+                    leftPress={()=>{
+                        let _backTo = this.params.backTo || 'Order';
+                        this.props.navigation.navigate(_backTo, this.params);
+                    }}
                 />
                 <ScrollView
                     keyboardShouldPersistTaps="handled"
