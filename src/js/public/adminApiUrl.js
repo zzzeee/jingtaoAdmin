@@ -18,6 +18,10 @@ var urls = {
     getOrderList: host + '/api/settled/SorderController/getSettledOrderList',
     //获取订单详情
     getOrderDetail: host + '/api/settled/SorderController/getSettledOrderDetail',
+    //获取物流信息
+    getExpressInfo: host + '/api/settled/SorderController/getShopOrderExpressByExpressNum',
+    //商家发货
+    shopDeliverGoods: host + '/api/settled/SorderController/shopOrderExpressNumInsdert',
 };
 
 export default urls;

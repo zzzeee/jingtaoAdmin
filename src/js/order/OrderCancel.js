@@ -89,8 +89,8 @@ export default class OrderCancel extends Component {
                             </View>
                             {this.cancelTexts.map((item, index) => {
                                 let img = this.state.select == index ?
-                                    require('../../images/car/select.png') :
-                                    require('../../images/car/no_select.png');
+                                    require('../../images/order/select.png') :
+                                    require('../../images/order/no_select.png');
                                 return (
                                     <TouchableOpacity key={index} onPress={()=>{
                                         this.setState({select: index,});

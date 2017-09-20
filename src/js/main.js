@@ -11,6 +11,7 @@ import {
     Image,
     ScrollView,
     TouchableOpacity,
+    RefreshControl,
 } from 'react-native';
 
 import ParallaxScrollView from 'react-native-parallax-scroll-view';
@@ -31,6 +32,7 @@ export default class Main extends Component {
             shopUser: null,
             shopHead: null,
             showAlert: false,
+            isRefreshing: true,
         };
         this.alertBody = null;
         this.shop = null;
@@ -57,6 +59,7 @@ export default class Main extends Component {
                         shopName: ret.shopInfo.sShopName || null,
                         shopUser: ret.shopInfo.linkmanTel || null,
                         shopHead: ret.shopInfo.sLogo || null,
+                        isRefreshing: false,
                     });
                 }
             }else {
@@ -81,7 +84,7 @@ export default class Main extends Component {
     
     render() {
         // if(!this.shop) return null;
-        let {shopName, shopUser, shopHead, showAlert} = this.state;
+        let {shopName, shopUser, shopHead, showAlert, isRefreshing} = this.state;
         let headimg = shopHead ? {uri: shopHead} : require('../images/home/nothead.png');
         return (
             <ParallaxScrollView
@@ -115,6 +118,13 @@ export default class Main extends Component {
                         <Text style={styles.foregroundTitleText}>境淘生意宝</Text>
                     </View>
                 )}
+                refreshControl={<RefreshControl
+                    refreshing={isRefreshing}
+                    onRefresh={this.initPage}
+                    title="释放立即刷新我..."
+                    tintColor={Color.mainFontColor}
+                    titleColor={Color.mainFontColor}
+                />}
             >
                 <View style={styles.btnBody}>
                     {this.btnItem(styles.btnStyle2, require('../images/home/order.png'), '订单管理', 'Order')}

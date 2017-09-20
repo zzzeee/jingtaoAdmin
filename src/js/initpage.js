@@ -90,7 +90,7 @@ export default class PushActivity extends Component {
 		});
         JPushModule.notifyJSDidLoad((resultCode)=>{
             //我他妈的也不知道这里应该写些啥, 但他娘的又不能不写。
-            console.log(resultCode);    //0
+            // console.log(resultCode);    //0
         });
         JPushModule.addReceiveCustomMsgListener((map) => {
             console.log("addReceiveCustomMsgListener: ");

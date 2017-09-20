@@ -113,7 +113,7 @@ var styles = StyleSheet.create({
         minHeight: 180,
     },
     alertTextView: {
-        minHeight: 130,
+        minHeight: 100,
         backgroundColor: '#fff',
         justifyContent: 'center',
         alignItems: 'center',

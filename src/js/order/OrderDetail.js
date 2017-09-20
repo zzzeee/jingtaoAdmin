@@ -1,7 +1,6 @@
 /**
- * 个人中心 - 我的订单 - 订单详情
+ * 我的订单 - 订单详情
  * @auther linzeyong
- * @date   2017.06.27
  */
 
 import React , { Component } from 'react';
@@ -13,13 +12,14 @@ import {
     TouchableOpacity,
     ScrollView,
     Linking,
+    Clipboard,
 } from 'react-native';
 
+import Toast from 'react-native-root-toast';
 import Utils from '../public/utils';
 import Urls from '../public/adminApiUrl';
-import { Size, PX, pixel, Color } from '../public/globalStyle';
-import Lang, {str_replace} from '../public/language';
-import ListFrame from '../other/ListViewFrame';
+import { Size, pixel, } from '../public/globalStyle';
+import { Color } from '../public/theme';
 import OrderGood from './OrderGood';
 import AppHead from '../public/AppHead';
 import OrderCancel from './OrderCancel';
@@ -47,6 +47,7 @@ export default class OrderDetail extends Component {
         this.alertMsg = '';
         this.isRefresh = false;   // 返回时是否刷新列表页
         this.actualTotal = 0;
+        this.params = null;
     }
 
     componentWillMount() {
@@ -61,8 +62,8 @@ export default class OrderDetail extends Component {
     initDatas = () => {
         let { navigation } = this.props;
         if(navigation && navigation.state && navigation.state.params) {
-            let params = navigation.state.params;
-            let { mToken, shopOrderNum, selectIndex, isRefresh, } = params;
+            this.params = navigation.state.params || {};
+            let { mToken, shopOrderNum, selectIndex, isRefresh, } = this.params;
             this.mToken = mToken || null;
             this.shopOrderNum = shopOrderNum || null;
             this.selectIndex = selectIndex || 0;
@@ -94,6 +95,15 @@ export default class OrderDetail extends Component {
         }
     };
 
+    //显示提示 
+    showToast = (str) => {
+        let toast = Toast.show(str, {
+            duration: Toast.durations.SHORT,
+            position: Toast.positions.CENTER,
+            hideOnPress: true,
+        });
+    };
+
     //显示取消订单
     showCancelWindow = () => {
         this.setState({showCancelBox: true, });
@@ -119,59 +129,22 @@ export default class OrderDetail extends Component {
     showAlertMoudle = (msg, func, rText = null) => {
         this.alertObject = {
             text: msg,
-            leftText: Lang[Lang.default].cancel,
-            rightText: rText || Lang[Lang.default].determine,
+            leftText: '取消',
+            rightText: rText || '确认',
             leftClick: ()=>this.setState({deleteAlert: false,}),
             rightClick: func,
-            leftColor: Color.lightBack,
+            leftColor: '',
             leftBgColor: '#fff',
-            rightColor: Color.lightBack,
+            rightColor: Color.mainFontColor,
             rightBgColor: '#fff',
         };
         this.setState({deleteAlert: true,});
     };
 
-    //点击确认收货
-    goodsReceipt = () => {
-        let { navigation } = this.props;
-        if(this.shopOrderNum && this.mToken) {
-            Utils.fetch(Urls.updateOrderStatu, 'post', {
-                mToken: this.mToken,
-                oStatus: 4,
-                orderNum: this.shopOrderNum,
-            }, (result)=>{
-                console.log(result);
-                if(result) {
-                    let type = 1;
-                    let msg = result.sMessage || null;
-                    let ret = result.sTatus || 0;
-                    if(ret == 1) {
-                        this.setState({
-                            deleteAlert: false,
-                        }, ()=>{
-                            navigation.navigate('OrderNotify', {
-                                mToken: this.mToken,
-                                shopOrderNum: this.shopOrderNum,
-                                pageType: 2,
-                            });
-                        });
-                    }else {
-                        this.alertMsg = msg;
-                        this.type = type;
-                        this.setState({
-                            deleteAlert: false,
-                            showAlert: true,
-                        });
-                    }
-                }
-            });
-        }
-    };
-
-    //联系客服/商家
+    //联系客服
     sellTelphone = () => {
         this.setState({deleteAlert: false,}, ()=>{
-            Linking.openURL('tel: ' + Lang.telephone)
+            Linking.openURL('tel: 4000237333')
             .catch(err => console.error('调用电话失败！', err));
         });
     };
@@ -202,13 +175,13 @@ export default class OrderDetail extends Component {
         return (
             <View style={styles.flex}>
                 <AppHead
-                    title={Lang[Lang.default].orderDetail}
+                    title={'订单详情'}
                     goBack={true}
                     leftPress={()=>{
                         if(this.isRefresh) {
-                            navigation.navigate('MyOrder', {
+                            navigation.navigate('Order', {
                                 mToken: this.mToken,
-                                index: this.selectIndex,
+                                selectIndex: this.selectIndex,
                             });
                         }else {
                             navigation.goBack(null);
@@ -220,7 +193,7 @@ export default class OrderDetail extends Component {
                         }
                     }}
                 />
-                <View style={styles.flex}>
+                <View style={styles.container}>
                     {load_or_error ?
                         load_or_error :
                         (orders ?
@@ -228,35 +201,6 @@ export default class OrderDetail extends Component {
                         )
                     }
                 </View>
-                {this.titleBtns ?
-                    <View style={styles.footBox}>
-                        <TouchableOpacity onPress={()=>{
-                            this.showAlertMoudle(
-                                Lang.telephone2,
-                                this.sellTelphone,
-                                Lang[Lang.default].call
-                            );
-                        }} style={styles.btnStyle2}>
-                            <Image style={styles.custemIcon} source={require('../../images/product/custem_center.png')} />
-                            <Text style={styles.fontStyle3}>客服</Text>
-                        </TouchableOpacity>
-                        {this.titleBtns.btns2.length ?
-                            <View style={styles.footBoxRight}>
-                                {this.titleBtns.btns2.map((item, index)=>{
-                                    return (
-                                        <TouchableOpacity key={index} style={[styles.btnStyle3, {
-                                            backgroundColor: item.bgColor,
-                                        }]} onPress={item.fun}>
-                                            <Text style={styles.fontStyle4}>{item.val}</Text>
-                                        </TouchableOpacity>
-                                    );
-                                })}
-                            </View>
-                            : null
-                        }
-                    </View>
-                    : null
-                }
                 {showCancelBox ?
                     <OrderCancel
                         isShow={showCancelBox}
@@ -302,6 +246,7 @@ export default class OrderDetail extends Component {
         let expressInfo = orders.oExpress ? orders.oExpress : {};
         let expressData = expressInfo.showapi_res_body || {};
         let sid = sOrderInfo.sId || 0;
+        let msg = sOrderInfo.oMessage || null;
         let orderID = sOrderInfo.soID || null;
         let orderNum = sOrderInfo.orderNum || null;
         let sName = sOrderInfo.sShopName || null;
@@ -325,8 +270,8 @@ export default class OrderDetail extends Component {
         this.actualTotal = (totalMoney - oIntegral - oScoupon).toFixed(2);
         if(this.actualTotal < 0) this.actualTotal = 0;
         return (
-            <ScrollView contentContainerStyle={styles.container}>
-                <View style={styles.sessionBox}>
+            <ScrollView>
+                <View style={{marginTop: 10}}>
                     <View style={styles.bgboxStyle} />
                     <View style={styles.bgboxBody}>
                         <View style={styles.bgboxBodyTop}>
@@ -335,47 +280,56 @@ export default class OrderDetail extends Component {
                                 : null
                             }
                             <View>
-                                <Text style={styles.bgboxBodyTopText1}>
-                                    {this.titleBtns.text1}
+                                <View style={styles.rowStyle}>
+                                    <Text style={styles.bgboxBodyTopText1}>
+                                        {this.titleBtns.text1}
+                                    </Text>
                                     {this.titleBtns.text2 ?
                                         <Text style={styles.bgboxBodyTopText2}>{this.titleBtns.text2}</Text>
                                         : null
                                     }
-                                </Text>
+                                </View>
+                                <Text style={[styles.grayFont, {marginTop: 10}]}>{'下单时间： ' + addTime}</Text>
                             </View>
                         </View>
-                        <View>
-                            <Text></Text>
-                            <Text></Text>
+                        <View style={styles.bgboxBodyBottom}>
+                            <Text style={styles.grayFont}>{'订单号: ' + orderNum}</Text>
+                            <TouchableOpacity style={styles.btnCopy} onPress={()=>{
+                                Clipboard.setString(orderNum);
+                                this.showToast('已复制');
+                            }}>
+                                <Text style={styles.btnCopyText}>复制</Text>
+                            </TouchableOpacity>
                         </View>
                         <View style={styles.leftCircular} />
                         <View style={styles.rightCircular} />
                         <View style={styles.bottomCircular} />
-                        <View style={styles.bgboxLineStyle} />
+                        <Image source={require('../../images/order/dotted.png')} resizeMode="stretch" style={styles.bgboxLineStyle} />
                     </View>
-                    <View style={styles.bgboxBodyTopFloat} />
+                    <Image source={require('../../images/order/gradient.png')} resizeMode="stretch" style={styles.bgboxBodyTopFloat} />
                 </View>
                 <View style={styles.sessionBox}>
-                    <View style={styles.rowStyle1}>
-                        <TouchableOpacity onPress={()=>navigation.navigate('Shop', {shopID: sid})} style={{
-                            padding: 5,
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                        }}>
-                            <Image source={require('../../images/car/shophead.png')} style={{
-                                width: 26,
-                                height: 26,
-                            }} />
-                            <Text style={{
-                                color: Color.lightBack,
-                                fontSize: 14,
-                            }}>{sName}</Text>
-                        </TouchableOpacity>
+                    <View style={styles.addressBody}>
+                        <View style={styles.addressInfo}>
+                            <Text style={styles.defaultFont}>{'收货人:' + name}</Text>
+                            <Text style={[styles.defaultFont, {
+                                marginLeft: 30,
+                            }]}>{'电话：' + phone}</Text>
+                        </View>
+                        <Text style={styles.defaultFont}>{'地址：' + area}</Text>
                     </View>
+                    {(msg && msg != '') ?
+                        <View style={styles.memoBox}>
+                            <Text style={styles.grayFont}>{'备注: ' + msg}</Text>
+                        </View>
+                        : null
+                    }
+                </View>
+                <View style={styles.sessionBox}>
                     <View>
                         {goods.map((item, index)=>{
                             return <OrderGood onPress={()=>{
-                                navigation.navigate('Product', {gid: item.gID, })
+                                // navigation.navigate('Product', {gid: item.gID, })
                             }} good={item} key={index} />;
                         })}
                     </View>
@@ -383,37 +337,33 @@ export default class OrderDetail extends Component {
                     {this.getPriceRow('运费', freight)}
                     {this.getPriceRow('优惠券', oScoupon, true, false)}
                     {this.getPriceRow('积分抵现', oIntegral, true, false)}
-                    <View style={styles.totalBox}>
-                        <Text style={styles.totalNumber}>{str_replace(Lang[Lang.default].totalProductNumberL, totalNum)}</Text>
+                    <View style={[styles.rowStyle2, {
+                        justifyContent: 'flex-end',
+                    }]}>
                         <Text style={styles.defaultFont}>
-                            <Text>{Lang[Lang.default].total2 + ' '}</Text>
-                            <Text style={styles.redColor}>{Lang[Lang.default].RMB + this.actualTotal}</Text>
+                            共
+                            <Text style={styles.redColor}>{' ' + totalNum + ' '}</Text>
+                            件商品, 合计：
+                            <Text style={styles.redColor}>{' ¥' + this.actualTotal}</Text>
                         </Text>
+
+                    </View>
+                    <View style={styles.totalBox}>
+                        {this.titleBtns.btns2.map((item, index)=>{
+                            let _bgColor = item.bgColor || '#4A4A4A';
+                            return (
+                                <TouchableOpacity key={index} style={[].concat(styles.btnStyle3, {
+                                    borderColor: _bgColor,
+                                })} onPress={item.fun}>
+                                    <Text style={[].concat(styles.fontStyle4, {
+                                        color: _bgColor,
+                                    })}>{item.val}</Text>
+                                </TouchableOpacity>
+                            );
+                        })}
                     </View>
                 </View>
-                <View style={styles.sessionBox}>
-                    {this.getPriceRow('订单号码', orderNum, false)}
-                    {this.getPriceRow('下单时间', addTime, false)}
-                    {this.getPriceRow('付款时间', payTime, false)}
-                    {this.titleBtns.btns1 && this.titleBtns.btns1.length ?
-                        <View style={[styles.rowStyle2, {justifyContent: 'center', }]}>
-                            {this.titleBtns.btns1.map((item, index)=>{
-                                return (
-                                    <TouchableOpacity key={index} style={styles.btnStyle} onPress={()=>{
-                                        if(item.fun) {
-                                            item.fun();
-                                        }else {
-                                            this.notFinished();
-                                        }
-                                    }}>
-                                        <Text style={styles.fontStyle2}>{item.val}</Text>
-                                    </TouchableOpacity>
-                                );
-                            })}
-                        </View>
-                        : null
-                    }
-                </View>
+                
             </ScrollView>
         )
     };
@@ -423,16 +373,16 @@ export default class OrderDetail extends Component {
         if(!price) return null;
         if(isPrice) {
             if(isAdd) {
-                price = Lang[Lang.default].RMB + price;
+                price = '¥'+ price;
             }else {
-                price = '-' + Lang[Lang.default].RMB + price;
+                price = '- ¥' + price;
             }
         }
         return (
             <View style={styles.rowStyle2}>
                 <Text numberOfLines={1} style={styles.fontStyle1}>{text}</Text>
                 <Text numberOfLines={1} style={[styles.fontStyle1, {
-                    color: (isPrice && !isAdd) ? Color.mainColor : (isPrice ? Color.lightBack : Color.gainsboro),
+                    color: (isPrice && !isAdd) ? Color.redFontColor : (isPrice ? Color.mainFontColor : Color.grayFontColor),
                 }]}>{price}</Text>
             </View>
         );
@@ -495,7 +445,16 @@ export default class OrderDetail extends Component {
             text2: '',
             image: null,
             btns1: [],
-            btns2: [],
+            btns2: [{
+                val: '联系境淘',
+                fun: ()=>{
+                    that.showAlertMoudle(
+                        '客服号码: 400-023-7333',
+                        that.sellTelphone,
+                        '呼叫'
+                    );
+                }
+            }],
         };
 
         if(payid == 0) {
@@ -520,28 +479,30 @@ export default class OrderDetail extends Component {
                     //待发货
                     obj.text1 = '等待商家发货';
                     obj.text2 = '';
+                    obj.btns2.push({
+                        val: '立即发货',
+                        bgColor: '#EB5144',
+                        fun: ()=>{
+                            let obj = Object.assign({backTo: 'OrderDetail'}, this.params);
+                            navigation.navigate('LogisticsNumber', obj);
+                        }
+                    });
                     obj.image = require('../../images/order/payok_right.png');
                     break;
                 case 3:
                 case 5:
                     //待收货
                     obj.text1 = '等待用户收货';
-                    obj.text2 = expirationDate + '后将自动确认收货';
+                    obj.text2 = expirationDate ? expirationDate + '后自动确认收货' : '';
                     obj.btns2.push({
                         val: '查看物流',
-                        bgColor: Color.orange,
                         fun: ()=>{
-                            navigation.navigate('OrderLogistics', {
+                            let obj = Object.assign({
                                 Logistics: expressData,
-                            });
+                                backTo: 'OrderDetail',
+                            }, that.params);
+                            navigation.navigate('OrderLogistics', obj);
                         }
-                    });
-                    obj.btns2.push({
-                        val: '确认收货',
-                        bgColor: Color.mainColor,
-                        fun: ()=>{
-                            that.showAlertMoudle(Lang[Lang.default].confirmReceipt2, that.goodsReceipt);
-                        },
                     });
                     obj.image = require('../../images/order/order_yfh.png');
                     break;
@@ -551,30 +512,25 @@ export default class OrderDetail extends Component {
                     obj.image = require('../../images/order/order_finish.png');
                     break;
                 case 6:
-                    obj.text1 = Lang[Lang.default].applyReturning;
+                    obj.text1 = '申请退换中';
                     break;
                 case 7:
-                    obj.text1 = Lang[Lang.default].applyFail;
+                    obj.text1 = '申请失败';
                     break;
                 case 8:
-                    obj.text1 = Lang[Lang.default].applySuccess;
+                    obj.text1 = '申请成功';
                     break;
                 default:
-                    obj.text1 = Lang[Lang.default].cnknownState;
+                    obj.text1 = '未知状态';
                     break;
             }
         }else if(payid == 2) {
             //已退款
-            obj.text1 = '订单' + Lang[Lang.default].isTuiKuan;
+            obj.text1 = '订单已退款';
         }else {
             //未付款
             obj.text1 = '等待用户付款';
-            obj.text2 = '订单将在' + expirationDate + '后自动关闭';
-            obj.btns2.push({
-                val: '取消订单',
-                bgColor: Color.orange,
-                fun: that.showCancelWindow,
-            });
+            obj.text2 = expirationDate ? expirationDate + '后自动关闭' : '';
             obj.image = require('../../images/order/order_dfk.png');
         }
         return obj;
@@ -587,111 +543,66 @@ var styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        paddingTop: PX.marginTB,
-        backgroundColor: '#ccc',
+        backgroundColor: '#eee',
     },
     sessionBox: {
-        marginBottom: PX.marginTB,
+        marginBottom: 10,
         backgroundColor: '#fff',
     },
-    rowStyle1: {
-        height: PX.rowHeight2,
-        paddingLeft: 10,
-        paddingRight: PX.marginLR,
-        flexDirection: 'row',
+    rowStyle: {
+        flexDirection : 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
     },
     rowStyle2: {
-        height: PX.rowHeight1,
-        marginLeft: PX.marginLR,
-        paddingRight: PX.marginLR,
+        height: 50,
+        marginLeft: 15,
+        paddingRight: 15,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        borderBottomWidth: 1,
-        borderBottomColor: Color.lavender,
-    },
-    rowStyle3: {
-        height: PX.rowHeight2,
-        justifyContent: 'center',
-        paddingLeft: PX.marginLR,
         borderBottomWidth: pixel,
-        borderBottomColor: Color.lavender,
+        borderBottomColor: Color.borderColor,
     },
     fontStyle1: {
         fontSize: 13,
-        color: Color.lightBack,
+        color: Color.mainFontColor,
         lineHeight: 20,
-    },
-    fontStyle2: {
-        fontSize: 12,
-        color: Color.mainColor,
-    },
-    fontStyle3: {
-        fontSize: 10,
-        color: Color.lightBack,
     },
     fontStyle4: {
-        fontSize: 14,
-        color: '#fff',
+        fontSize: 13,
+        color: Color.mainFontColor,
     },
-    fontStyle5: {
-        fontSize: 14,
-        color: Color.lightBack,
-        lineHeight: 20,
-    },
-    fontStyle6: {
-        fontSize: 12,
-        color: Color.gainsboro,
-    },
-    btnStyle: {
-        paddingLeft: 38,
-        paddingRight: 38,
+    btnStyle3: {
+        width: 72,
         height: 27,
         justifyContent: 'center',
         alignItems: 'center',
-        borderRadius: 3,
-        borderWidth: 1,
-        borderColor: Color.mainColor,
-        marginLeft: 5,
+        marginLeft: 15,
         marginRight: 5,
-    },
-    btnStyle2: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: PX.rowHeight1,
-        marginLeft: PX.marginLR,
-    },
-    btnStyle3: {
-        width: 90,
-        height: PX.rowHeight1,
-        justifyContent: 'center',
-        alignItems: 'center',
+        borderWidth: 1,
+        borderRadius: 3,
     },
     totalBox: {
-        height: PX.rowHeight1,
+        height: 50,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'flex-end',
-        paddingLeft: PX.marginLR,
-        paddingRight: PX.marginLR,
-    },
-    totalNumber: {
-        color: Color.lightBack,
-        fontSize: 13,
-        paddingRight: 30,
+        paddingLeft: 15,
+        paddingRight: 15,
     },
     defaultFont: {
-        color: Color.lightBack,
+        color: Color.mainFontColor,
         fontSize: 13,
+        lineHeight: 20,
+    },
+    grayFont: {
+        fontSize: 12,
+        color: Color.grayFontColor,
+        lineHeight: 20,
     },
     redColor: {
-        color: Color.red,
+        color: Color.redFontColor,
         fontSize: 14,
-    },
-    grayBox: {
-        backgroundColor: Color.lightGrey,
     },
     bgboxStyle: {
         height: 20,
@@ -706,31 +617,50 @@ var styles = StyleSheet.create({
         marginRight: 8,
         justifyContent: 'center',
         backgroundColor: '#fff',
+        marginBottom: 10,
     },
     bgboxBodyTop: {
         flexDirection: 'row',
         alignItems: 'center',
     },
     topBoxLeftImg: {
-        marginLeft: 30,
+        marginLeft: 20,
         width: 40,
         height: 40,
         marginRight: 20,
     },
     bgboxBodyTopText1: {
         fontSize: 14,
-        color: '#9B9B9B',
-        paddingLeft: 15,
+        color: Color.mainFontColor,
     },
     bgboxBodyTopText2: {
-        fontSize: 11
+        fontSize: 11,
+        color: Color.grayFontColor,
+        marginLeft: 10,
+    },
+    bgboxBodyBottom: {
+        flexDirection: 'row',
+        paddingLeft: 20,
+        marginTop: 15,
+        alignItems: 'center',
+    },
+    btnCopy: {
+        paddingVertical: 2,
+        paddingHorizontal: 10,
+        marginLeft: 20,
+        borderColor: '#E7E7E7',
+        borderWidth: 1,
+    },
+    btnCopyText: {
+        fontSize: 13,
+        color: Color.grayFontColor,
     },
     leftCircular: {
         width: 12,
         height: 12,
         borderRadius: 6,
         position: 'absolute',
-        backgroundColor: '#ccc',
+        backgroundColor: '#eee',
         left: -6,
         top: 6,
     },
@@ -739,81 +669,49 @@ var styles = StyleSheet.create({
         height: 12,
         borderRadius: 6,
         position: 'absolute',
-        backgroundColor: '#ccc',
+        backgroundColor: '#eee',
         right: -6,
         top: 6,
     },
     bgboxLineStyle: {
         position: 'absolute',
         width: Size.width - 36,
-        borderBottomWidth: 1,
-        borderBottomColor: '#ccc',
-        borderStyle: 'dashed',
+        height: 1,
         left: 10,
         top: 12,
+        tintColor: '#ddd',
     },
     bottomCircular: {
         width: 20,
         height: 20,
         borderRadius: 10,
         position: 'absolute',
-        backgroundColor: '#ccc',
+        backgroundColor: '#eee',
         bottom: -10,
         left: Size.width / 2 - 10,
     },
     bgboxBodyTopFloat: {
         position: 'absolute',
         left: 8,
-        right: 8,
-        top: 3,
-        height: 23,
+        top: 2,
+        width: Size.width - 16,
+        height: 20,
         backgroundColor: 'rgba(255,255,255,0.7)',
     },
-    expressDataBox: {
+    addressBody: {
+        marginLeft: 15,
+        padding: 8,
+        paddingLeft: 0,
+    },
+    addressInfo: {
         flexDirection : 'row',
-        minHeight: 65,
-        paddingLeft: PX.marginLR,
-        paddingRight: PX.marginLR,
-        paddingTop: 10,
-        paddingBottom: 5,
-        borderBottomWidth: pixel,
-        borderBottomColor: Color.lavender,
-        justifyContent: 'space-between',
-        alignItems: 'center',
+        marginBottom: 4,
     },
-    moreIcon: {
-        width: PX.iconSize26,
-        height: PX.iconSize26,
-    },
-    addressBox: {
-        minHeight: 65,
-        marginLeft: PX.marginLR,
-        marginRight: PX.marginLR,
-        paddingTop: 12,
-        paddingBottom: 12,
-        borderBottomWidth: pixel,
-        borderBottomColor: Color.floralWhite,
-    },
-    rowStyle: {
-        flexDirection : 'row',
-        alignItems: 'center',
-    },
-    footBox: {
-        height: PX.rowHeight1,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderTopWidth: pixel,
-        borderTopColor: Color.lavender,
-        backgroundColor: '#fff',
-    },
-    custemIcon: {
-        width: 32,
-        height: 32,
-    },
-    footBoxRight: {
-        flex: 1,
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
+    memoBox: {
+        padding: 8,
+        paddingLeft: 0,
+        marginLeft: 15,
+        borderTopColor: '#E7E7E7',
+        borderTopWidth: 1,
     },
 });

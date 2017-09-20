@@ -46,7 +46,7 @@ export default class OrderComponent extends Component {
             orderInfo, 
             selectIndex,
         } = this.props;
-        if(!orderInfo || this.state.isDelete) return null;
+        if(!orderInfo || this.state.isDelete || !mToken) return null;
         let sid = orderInfo.sId || 0;
         let orderID = orderInfo.soID || null;
         let sName = orderInfo.sShopName || null;
@@ -167,15 +167,18 @@ export default class OrderComponent extends Component {
     getOrderBtns = (payid, _statuid, addTime, fhTime) => {
         let { 
             mToken, 
+            selectIndex,
             navigation, 
             showCancel, 
             showAlert, 
             changeOrderStatu, 
             clickPay,
+            orderInfo,
             showWarnMsg,
         } = this.props;
         let that = this;
         let statuid = parseInt(_statuid) || 0;
+        let orderID = orderInfo.soID || null;
         let expirationDate = '';
         let obj = {
             text: '',
@@ -212,10 +215,13 @@ export default class OrderComponent extends Component {
                     //待发货
                     obj.btns.push({
                         val: '立即发货',
-                        red: false,
+                        red: true,
                         fun: ()=>{
                             navigation.navigate('LogisticsNumber', {
                                 mToken: mToken,
+                                selectIndex: selectIndex,
+                                shopOrderNum: orderID,
+                                backTo: 'Order',
                             });
                         },
                     }, );
@@ -230,7 +236,10 @@ export default class OrderComponent extends Component {
                         fun: ()=>{
                             navigation.navigate('OrderLogistics', {
                                 mToken: mToken,
+                                selectIndex: selectIndex,
                                 expressNum: that.expressNum,
+                                shopOrderNum: orderID,
+                                backTo: 'Order',
                             });
                         },
                     });

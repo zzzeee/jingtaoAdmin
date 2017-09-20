@@ -55,9 +55,9 @@ export default class MyOrder extends Component {
         let { navigation } = this.props;
         if(navigation && navigation.state && navigation.state.params) {
             let params = navigation.state.params;
-            let { mToken, index } = params;
+            let { mToken, selectIndex } = params;
             this.mToken = mToken || null;
-            let _index = index ? index : 0;
+            let _index = selectIndex ? selectIndex : 0;
             this.setState({
                 initIndex: _index,
                 selIndex: _index,
@@ -71,6 +71,7 @@ export default class MyOrder extends Component {
             <View style={styles.flex}>
                 <AppHead
                     title='我的订单'
+                    goBack={true}
                     leftPress={()=>navigation.navigate('Main')}
                     onPress={()=>{
                         if(this.listRefs[this.state.selIndex]) {

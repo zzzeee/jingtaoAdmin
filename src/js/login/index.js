@@ -172,7 +172,10 @@ export default class Login extends Component {
                         _User.saveUserID(token)
                         .then(() => {
                             if(navigation) {
-                                navigation.navigate('Main');
+                                let params = navigation.state.params;
+                                let _backTo = params && params.backTo ? params.backTo : 'Main';
+                                let _backObj = params && params.backObj ? params.backObj : {};
+                                navigation.navigate(_backTo, _backObj);
                             }
                         });
                     }else if(msg) {
