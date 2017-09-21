@@ -11,7 +11,6 @@ import {
     View,
 } from 'react-native';
 
-import DeviceInfo from 'react-native-device-info';
 import JPushModule from 'jpush-react-native';
 const receiveCustomMsgEvent = "receivePushMsg";
 const receiveNotificationEvent = "receiveNotification";
@@ -23,59 +22,12 @@ var _User = new User();
 
 export default class PushActivity extends Component {
 	constructor(props) {
-		super(props);
+        super(props);
+        this.token = null;
+        this.force = false;
 	}
 
 	componentWillMount() {
-        this.getLocalToken();
-        // this.appActivityLog();
-    }
-
-    getLocalToken = async () => {
-        let token = await _User.getUserID().then((result)=>result);
-        if(token) {
-            this.props.navigation.navigate('Main');
-        }else {
-            this.props.navigation.navigate('Login');
-        }
-    };
-
-    //活动记录和数据统计
-    appActivityLog = () => {
-        let dArea = DeviceInfo.getDeviceLocale();   //设备地区
-        let dCity = DeviceInfo.getDeviceCountry();  //设备城市
-        let userAgent = DeviceInfo.getUserAgent();  //操作系统及版本
-        let dName = DeviceInfo.getDeviceName();     //设备名称
-        let readableVersion = DeviceInfo.getReadableVersion();
-        let version = DeviceInfo.getVersion();      //版本名称
-        let buildNumber = DeviceInfo.getBuildNumber();
-        let bundleId = DeviceInfo.getBundleId();    //包名
-        let systemVersion = DeviceInfo.getSystemVersion();
-        let systemName = DeviceInfo.getSystemName();
-        let deviceID = DeviceInfo.getDeviceId();
-        let model = DeviceInfo.getModel();  //型号
-        let brand = DeviceInfo.getBrand();  //品牌
-        let manufacturer = DeviceInfo.getManufacturer();    //制造商
-        let isEmulator = DeviceInfo.isEmulator();           //是否为虚拟机
-        let obj = {
-            'userAgent': userAgent.replace(/Android/ig, '安卓系统').replace(/like/ig, '1ike'),
-            'deviceName': dName,
-            'version': version,
-            'buildNumber': buildNumber,
-            'bundleId': bundleId,
-            'sysVersion': systemVersion,
-            'sysName': systemName,
-            'deviceID': deviceID,
-            'dModel': model,
-            'dBrand': brand,
-            'manufacturer': manufacturer,
-            'isEmulator': isEmulator ? 2 : 1,
-            'uniqueID': DeviceInfo.getUniqueID(),
-        };
-        console.log(obj);
-    };
-
-	componentDidMount() {
         JPushModule.getInfo((map) => {
             // console.log(map);
             /**
@@ -91,8 +43,21 @@ export default class PushActivity extends Component {
         JPushModule.notifyJSDidLoad((resultCode)=>{
             //我他妈的也不知道这里应该写些啥, 但他娘的又不能不写。
             // console.log(resultCode);    //0
+            if(!this.force) {
+                // this.getLocalToken();
+                _User.getUserID().then((result)=>{
+                    if(!this.force && this.props && this.props.navigation) {
+                        if(result) {
+                            this.props.navigation.navigate('Main');
+                        }else {
+                            this.props.navigation.navigate('Login');
+                        }
+                    }
+                });
+            }
         });
         JPushModule.addReceiveCustomMsgListener((map) => {
+            //暂不知作用
             console.log("addReceiveCustomMsgListener: ");
             console.log(map);
         });
@@ -106,7 +71,43 @@ export default class PushActivity extends Component {
             console.log("打开通知 addReceiveOpenNotificationListener: ");
             console.log(map);
             if(map && map.extras) {
-                this.props.navigation.navigate('Main');
+                this.force = true;
+                let params = JSON.parse(map.extras) || {};
+                if(params && params.orderID) {
+                    if(this.props && this.props.navigation) {
+                        this.props.navigation.navigate('OrderDetail', {
+                            isRefresh: true,
+                            shopOrderNum: params.orderID,
+                        });
+                    }else {
+                        this.timer = setTimeout(()=>{
+                            if(this.props && this.props.navigation) {
+                                this.props.navigation.navigate('OrderDetail', {
+                                    isRefresh: true,
+                                    shopOrderNum: params.orderID,
+                                });
+                            }else {
+                                this.timer = setTimeout(()=>{
+                                    if(this.props && this.props.navigation) {
+                                        this.props.navigation.navigate('OrderDetail', {
+                                            isRefresh: true,
+                                            shopOrderNum: params.orderID,
+                                        });
+                                    }else {
+                                        this.timer = setTimeout(()=>{
+                                            if(this.props && this.props.navigation) {
+                                                this.props.navigation.navigate('OrderDetail', {
+                                                    isRefresh: true,
+                                                    shopOrderNum: params.orderID,
+                                                });
+                                            }
+                                        }, 500);
+                                    }
+                                }, 400);
+                            }
+                        }, 300);
+                    }
+                }
             }
             /*
             {
@@ -117,20 +118,33 @@ export default class PushActivity extends Component {
              */
         });
         JPushModule.addGetRegistrationIdListener((registrationId) => {
-            console.log("新用户注册: ");
             //registrationId: 18071adc03370efe851
-            console.log("Device register succeed, registrationId: " + registrationId);
+            console.log("新用户注册, registrationId: " + registrationId);
         });
+    }
+
+	componentDidMount() {
+        
 	}
 
 	componentWillUnmount() {
+        this.timer && clearTimeout(this.timer);
 		JPushModule.removeReceiveCustomMsgListener(receiveCustomMsgEvent);
 		JPushModule.removeReceiveNotificationListener(receiveNotificationEvent);
 		JPushModule.removeReceiveOpenNotificationListener(openNotificationEvent);
 		JPushModule.removeGetRegistrationIdListener(getRegistrationIdEvent);
-		console.log("Will clear all notifications");
-		JPushModule.clearAllNotifications();
-	}
+		// console.log("Will clear all notifications");
+		// JPushModule.clearAllNotifications();
+    }
+    
+    getLocalToken = async () => {
+        this.token = await _User.getUserID().then((result)=>result);
+        if(this.token) {
+            this.props.navigation.navigate('Main');
+        }else {
+            this.props.navigation.navigate('Login');
+        }
+    };
 
 	render() {
         return null;

@@ -23,7 +23,9 @@ var urls = {
     //商家发货
     shopDeliverGoods: host + '/api/settled/SorderController/shopOrderExpressNumInsdert',
     //添加极光ID
-    addJiGuangID: host + '/api/settled/BasicController/shopPushUniqueIDSave',
+    addPUSHID: host + '/api/settled/BasicController/shopPushUniqueIDSave',
+    //添加设备信息
+    addDeviceLog: host + '/api/Version/addUserActivityLog',
 };
 
 export default urls;

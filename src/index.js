@@ -15,6 +15,7 @@ import App from './js/';
 // import CodePush from "react-native-code-push";
 import { Size, PX } from './js/public/globalStyle';
 import {Color} from './js/public/theme';
+import { NavigationActions } from 'react-navigation';
 
 if(!__DEV__){
     global.console = {

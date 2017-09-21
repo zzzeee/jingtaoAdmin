@@ -75,7 +75,7 @@ export default class LogisticsNumber extends Component {
                     sToken: this.params.mToken,
                     exPressNum: number,
                 }, (result) => {
-                    // console.log(result);
+                    console.log(result);
                     let obj = {
                         canQuery: false,
                         isRefreshing: false,

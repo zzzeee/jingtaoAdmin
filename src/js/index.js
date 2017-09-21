@@ -18,6 +18,7 @@ import OrderDetail from './order/OrderDetail';
 import LogisticsNumber from './order/LogisticsNumber';
 import OrderLogistics from './order/OrderLogistics';
 import Barcode from './order/barcode';
+import SetApp from './personal/SetApp';
 
 //模块调用, 方便统一修改
 const MyNavScren = ({ navigation, NavScreen }) => (
@@ -64,6 +65,11 @@ const BarcodeScreen = ({ navigation }) => (
     <MyNavScren navigation={navigation} NavScreen={Barcode} />
 );
 
+//系统设置
+const SetAppScreen = ({ navigation }) => (
+    <MyNavScren navigation={navigation} NavScreen={SetApp} />
+);
+
 const AppNavigator = StackNavigator({
     Init: {screen: InitScreen, },
     Login: {screen: LoginScreen, },
@@ -73,6 +79,7 @@ const AppNavigator = StackNavigator({
     LogisticsNumber: {screen: LogisticsNumberScreen, },
     OrderLogistics: {screen: OrderLogisticsScreen, },
     Barcode: {screen: BarcodeScreen, },
+    SetApp: {screen: SetAppScreen, },
 }, {
     initialRouteName: 'Init',
     headerMode: 'none',

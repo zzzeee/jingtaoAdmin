@@ -13,6 +13,7 @@ import {
     TouchableOpacity,
 } from 'react-native';
 
+import { NavigationActions } from 'react-navigation';
 import BarcodeScanner from 'react-native-barcodescanner';
 import { Size, pixel } from '../public/globalStyle';
 import { Color } from '../public/theme';
@@ -46,11 +47,19 @@ export default class Barcode extends Component {
             Vibration.vibrate();
             this.barcode = e.data;
             this.bartype = e.type;
-            console.log(e);
+            // console.log(e);
             let obj = Object.assign({
-                logistyNumber: e.data,
+                logistyNumber: e.data.substring(0, 32),
             }, this.params);
-            this.props.navigation.navigate('LogisticsNumber', obj);
+            // this.props.navigation.navigate('LogisticsNumber', obj);
+            
+            const resetAction = NavigationActions.reset({
+              index: 0,
+              actions: [
+                NavigationActions.navigate({ routeName: 'LogisticsNumber', params: obj}),
+              ]
+            })
+            this.props.navigation.dispatch(resetAction)
         }
     }
 
@@ -59,13 +68,12 @@ export default class Barcode extends Component {
         let model = torchMode == 'off' ? 'on' : 'off';
         let image = torchMode == 'off' ? require('../../images/order/Flashlight.png') : require('../../images/order/Flashlight2.png');
         return (
-            <View style={styles.container}>
-                <BarcodeScanner
-                    onBarCodeRead={this.barcodeReceived.bind(this)}
-                    style={styles.BarcodeScanner}
-                    torchMode={torchMode}
-                    cameraType={cameraType}
-                />
+            <BarcodeScanner
+                onBarCodeRead={this.barcodeReceived.bind(this)}
+                style={styles.BarcodeScanner}
+                torchMode={torchMode}
+                cameraType={cameraType}
+            >
                 <View style={styles.statusBar}>
                     <Text style={styles.statusBarText}>请将二维码对准扫描框</Text>
                     <View style={styles.iconBox}>
@@ -83,7 +91,7 @@ export default class Barcode extends Component {
                         </TouchableOpacity>
                     </View>
                 </View>
-            </View>
+            </BarcodeScanner>
         );
     }
 }

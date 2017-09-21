@@ -75,8 +75,6 @@ export default class OrderComponent extends Component {
                         return <OrderGood good={item} onPress={()=>{
                             navigation.navigate('OrderDetail', {
                                 mToken: mToken,
-                                orderNum: orderNum,
-                                shopID: sid,
                                 shopOrderNum: orderID,
                                 selectIndex: selectIndex,
                             });

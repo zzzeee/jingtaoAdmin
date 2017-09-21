@@ -24,6 +24,9 @@ import { EndView } from '../other/publicEment';
 import ErrorAlert from '../other/ErrorAlert';
 import AlertMoudle from '../other/AlertMoudle';
 
+import User from '../public/user';
+var _User = new User();
+
 export default class OrderComponent extends Component {
     // 默认参数
     static defaultProps = {
@@ -79,9 +82,12 @@ export default class OrderComponent extends Component {
                     load_or_error: false,
                 };
                 if(result && result.sTatus == 4) {
-                    navigation.navigate('Login', {
-                        backTo: 'Order',
-                        backObj: {selectIndex: selectIndex},
+                    _User.delUserID()
+                    .then(()=>{
+                        navigation.navigate('Login', {
+                            backTo: 'Order',
+                            backObj: {selectIndex: selectIndex},
+                        });
                     });
                     return;
                 }else if(result && result.sTatus == 1 && result.orderAry) {

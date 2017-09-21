@@ -18,9 +18,10 @@ import {
     Platform,
 } from 'react-native';
 
+import DeviceInfo from 'react-native-device-info';
 import { NavigationActions } from 'react-navigation';
-
-import Utils, { Loading } from '../public/utils';
+import JPushModule from 'jpush-react-native';
+import Utils, { Loading, AppDeviceInfo } from '../public/utils';
 import Urls from '../public/adminApiUrl';
 import InputText from '../public/InputText';
 import Lang, {str_replace, TABKEY} from '../public/language';
@@ -147,6 +148,43 @@ export default class Login extends Component {
         return false;
     };
 
+    //APP设备记录
+    AppDeviceInfo = (token = null) => {
+        let dArea = DeviceInfo.getDeviceLocale();   //设备地区
+        let dCity = DeviceInfo.getDeviceCountry();  //设备城市
+        let userAgent = DeviceInfo.getUserAgent();  //操作系统及版本
+        let dName = DeviceInfo.getDeviceName();     //设备名称
+        let readableVersion = DeviceInfo.getReadableVersion();
+        let version = DeviceInfo.getVersion();      //版本名称
+        let buildNumber = DeviceInfo.getBuildNumber();
+        let bundleId = DeviceInfo.getBundleId();    //包名
+        let systemVersion = DeviceInfo.getSystemVersion();
+        let systemName = DeviceInfo.getSystemName();
+        let deviceID = DeviceInfo.getDeviceId();
+        let model = DeviceInfo.getModel();  //型号
+        let brand = DeviceInfo.getBrand();  //品牌
+        let manufacturer = DeviceInfo.getManufacturer();    //制造商
+        let isEmulator = DeviceInfo.isEmulator();           //是否为虚拟机
+        let obj = {
+            'userAgent': userAgent,
+            'deviceName': dName,
+            'version': version,
+            'buildNumber': buildNumber,
+            'bundleId': bundleId,
+            'sysVersion': systemVersion,
+            'sysName': systemName,
+            'deviceID': deviceID,
+            'dModel': model,
+            'dBrand': brand,
+            'manufacturer': manufacturer,
+            'isEmulator': isEmulator ? 2 : 1,
+            'uniqueID': DeviceInfo.getUniqueID(),
+        };
+        if(token) obj.mToken = this.token;
+        // console.log(obj);
+        return obj;
+    };
+
     //点击登录
     startLogin = () => {
         let navigation = this.props.navigation || null;
@@ -169,6 +207,18 @@ export default class Login extends Component {
                     let msg = result.sMessage || null;
                     let token = result.sToken || null;
                     if(ret == 1 && token) {
+                        //添加极光ID
+                        JPushModule.getRegistrationID((registrationId) => {
+                            if(registrationId) {
+                                Utils.fetch(Urls.addPUSHID, 'post', {
+                                    pushID: registrationId,
+                                    sToken: token,
+                                }, null);
+                            }
+                        });
+                        //添加设备记录
+                        Utils.fetch(Urls.addDeviceLog, 'post', this.AppDeviceInfo(token), null);
+                        //存储新token
                         _User.saveUserID(token)
                         .then(() => {
                             if(navigation) {

@@ -26,6 +26,9 @@ import AppHead from '../public/AppHead';
 import ErrorAlert from '../other/ErrorAlert';
 import AlertMoudle from '../other/AlertMoudle';
 
+import User from '../public/user';
+var _User = new User();
+
 export default class OrderDetail extends Component {
     constructor(props) {
         super(props);
@@ -39,8 +42,6 @@ export default class OrderDetail extends Component {
             isRefreshing: true,
         };
         this.mToken = null;
-        this.orderNum = null;
-        this.shopID = null;
         this.shopOrderNum = null;
         this.selectIndex = 0;
         this.ref_flatList = null;
@@ -73,7 +74,8 @@ export default class OrderDetail extends Component {
     };
 
     //获取订单信息
-    getOrderInfo = () => {
+    getOrderInfo = async () => {
+        if(!this.mToken) this.mToken = await _User.getUserID().then((result)=>result);
         if(this.mToken && this.shopOrderNum) {
             Utils.fetch(Urls.getOrderDetail, 'post', {
                 sToken: this.mToken,
@@ -87,11 +89,17 @@ export default class OrderDetail extends Component {
                         load_or_error: null,
                     });
                 }else if(result && result.sTatus == 4) {
-                    this.props.navigation.navigate('Login', {
-                        isRefresh: true,
-                        shopOrderNum: this.shopOrderNum,
-                        shopOrderNum: this.shopOrderNum,
-                    })
+                    _User.delUserID()
+                    .then(()=>{
+                        this.props.navigation.navigate('Login', {
+                            backTo: 'OrderDetail',
+                            backObj: {
+                                isRefresh: true,
+                                selectIndex: this.selectIndex,
+                                shopOrderNum: this.shopOrderNum,
+                            },
+                        });
+                    });
                 }
             }, (view)=>{
                 this.setState({
