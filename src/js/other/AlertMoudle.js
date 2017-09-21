@@ -15,16 +15,17 @@ import {
 } from 'react-native';
 
 import PropTypes from 'prop-types';
-import { Size, PX, pixel, Color } from '../public/globalStyle';
+import { Size, pixel } from '../public/globalStyle';
+import { Color } from '../public/theme';
 
 export default class AlertMoudle extends Component {
     // 默认参数
     static defaultProps = {
         visiable: false,
-        leftColor: '#fff',
-        rightColor: Color.lightBack,
+        leftColor: Color.mainFontColor,
+        rightColor: Color.mainFontColor,
         leftBgColor: Color.mainColor,
-        rightBgColor: '#ddd',
+        rightBgColor: Color.grayFontColor,
     };
     // 参数类型
     static propTypes = {
@@ -123,14 +124,14 @@ var styles = StyleSheet.create({
     },
     alertText: {
         fontSize: 14,
-        color: Color.lightBack,
+        color: Color.mainFontColor,
         lineHeight: 24,
     },
     bottonsBox: {
         height: 50,
         flexDirection : 'row',
         borderTopWidth: pixel,
-        borderTopColor: Color.lavender,
+        borderTopColor: Color.borderColor,
     },
     leftBottonStyle: {
         flex: 1,
@@ -145,7 +146,7 @@ var styles = StyleSheet.create({
         height: 50,
         width: 0,
         borderLeftWidth: pixel,
-        borderLeftColor: Color.lavender,
+        borderLeftColor: Color.borderColor,
     },
     rightBottonStyle: {
         flex: 1,

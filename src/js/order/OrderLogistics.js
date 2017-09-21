@@ -11,14 +11,14 @@ import {
     Text,
     Image,
     TouchableOpacity,
+    ScrollView,
 } from 'react-native';
 
 import Utils from '../public/utils';
-import Urls from '../public/apiUrl';
-import { Size, PX, pixel, Color } from '../public/globalStyle';
+import Urls from '../public/adminApiUrl';
+import { Size, pixel } from '../public/globalStyle';
+import { Color } from '../public/theme';
 import Lang, {str_replace} from '../public/language';
-import ListFrame from '../other/ListViewFrame';
-import { NavigationActions } from 'react-navigation';
 import AppHead from '../public/AppHead';
 
 export default class OrderLogistics extends Component {
@@ -56,21 +56,18 @@ export default class OrderLogistics extends Component {
         }
     };
 
+    //获取物流数据
     getLogisticsData = () => {
         if(!this.state.logistics && this.mToken && this.expressNum) {
-            Utils.fetch(Urls.getLogisticsInfo, 'post', {
-                mToken: this.mToken,
+            Utils.fetch(Urls.getExpressInfo, 'post', {
+                sToken: this.mToken,
                 exPressNum: this.expressNum
             }, (result)=>{
+                // console.log(result);
                 if(result && result.sTatus == 1) {
                     let express = result.exPreAy || null;
-                    if(express && express.showapi_res_body) {
-                        this.setState({
-                            logistics: express.showapi_res_body,
-                        });
-                    }else {
-                        this.setState({logistics: [], });
-                    }
+                    let info = express && express.showapi_res_body ? express.showapi_res_body : [];
+                    this.setState({logistics: info});
                 }
             });
         }
@@ -81,46 +78,45 @@ export default class OrderLogistics extends Component {
         return (
             <View style={styles.flex}>
                 <AppHead 
-                    title={Lang[Lang.default].logisticsInfo}
+                    title={'物流信息'}
                     goBack={true}
                     navigation={navigation}
-                    onPress={()=>this.ref_flatList.scrollToOffset({offset: 0, animated: true})}
+                    onPress={()=>this.ref_flatList.scrollTo({x: 0, y: 0, animated: true})}
                 />
-                {this.state.logistics ?
-                    <View style={styles.flex}>
-                        <ListFrame
-                            listHead={this.listHeadView()}
-                            navigation={navigation}
-                            get_list_ref={(ref)=>this.ref_flatList=ref}
-                        />
-                    </View>
-                    : null
-                }
+                <View style={styles.flex}>
+                    {this.state.logistics ?
+                        this.listHeadView() : this.notDataView()
+                    }
+                </View>
             </View>
         );
     }
 
+    //物流轨迹视图
     listHeadView = () => {
         let logistics = this.state.logistics || {};
         let expressData = logistics.data || [];
         let expressNum = logistics.mailNo || '';
         let expressName = logistics.expTextName || '';
         return (
-            <View style={styles.container}>
+            <ScrollView 
+                ref={(_ref)=>this.ref_flatList=_ref}
+                contentContainerStyle={styles.scrollStyle}
+            >
                 <View style={styles.sessionBox}>
                     <Text style={styles.defaultFont} numberOfLines={1}>
-                        {Lang[Lang.default].expressNumber + ': ' + expressNum}
+                        {'物流单号: ' + expressNum}
                     </Text>
                     <Text style={styles.defaultFont} numberOfLines={1}>
-                        {Lang[Lang.default].expressName + ': ' + expressName}
+                        {'物流公司: ' + expressName}
                     </Text>
                 </View>
                 {expressData.length > 0 ?
                     <View style={styles.expressDataBox}>
                         {expressData.map((item, index)=>{
                             let img = index == 0 ? 
-                                require('../../images/personal/red_circle.png') :
-                                require('../../images/personal/gray_circle.png');
+                                require('../../images/order/red_circle.png') :
+                                require('../../images/order/gray_circle.png');
                             let content = item.context || '';
                             let time = item.time || '';
                             return (
@@ -131,25 +127,32 @@ export default class OrderLogistics extends Component {
                                     </View>
                                     <View style={styles.itemRight}>
                                         <Text numberOfLines={2} style={{
-                                            color: index == 0 ? Color.mainColor : Color.lightBack,
+                                            color: index == 0 ? Color.mainColor : Color.mainFontColor,
                                             fontSize: 13,
                                             lineHeight: 17,
                                         }}>{content}</Text>
                                         <Text numberOfLines={1} style={{
-                                            color: index == 0 ? Color.mainColor : Color.gray,
+                                            color: index == 0 ? Color.mainColor : Color.grayFontColor,
                                             fontSize: 12,
                                         }}>{time}</Text>
                                     </View>
                                 </View>
                             );
                         })}
-                    </View>:
-                    <View style={styles.centerStyle}>
-                        <Image source={require('../../images/home/no_result.png')} style={styles.centerImage}>
-                            <Text numberOfLines={1} style={styles.centerText}>{Lang[Lang.default].notExpressData}</Text>
-                        </Image>
                     </View>
+                    : this.notDataView()
+                    
                 }
+            </ScrollView>
+        );
+    };
+
+    //无物流数据视图
+    notDataView = () => {
+        return (
+            <View style={styles.centerStyle}>
+                <Image source={require('../../images/order/no_logistics.png')} style={styles.centerImage} />
+                <Text numberOfLines={1} style={styles.centerText}>暂无物流信息</Text>
             </View>
         );
     };
@@ -159,8 +162,8 @@ var styles = StyleSheet.create({
     flex: {
         flex: 1,
     },
-    container: {
-        marginTop: PX.marginTB,
+    scrollStyle: {
+        paddingTop: 10,
     },
     sessionBox: {
         backgroundColor: '#fff',
@@ -172,11 +175,11 @@ var styles = StyleSheet.create({
     },
     defaultFont: {
         fontSize: 13,
-        color: Color.lightBack,
+        color: Color.mainFontColor,
     },
     expressDataBox: {
-        marginTop: PX.marginTB,
-        marginBottom: PX.marginTB,
+        marginTop: 10,
+        paddingBottom: 10,
         backgroundColor: '#fff',
     },
     itemBox: {
@@ -191,8 +194,8 @@ var styles = StyleSheet.create({
     },
     bgLineStyle: {
         height: 80,
-        borderRightWidth: 1,
-        borderRightColor: Color.lavender,
+        borderRightWidth: pixel,
+        borderRightColor: Color.borderColor,
     },
     circleStyle: {
         position: 'absolute',
@@ -208,22 +211,20 @@ var styles = StyleSheet.create({
         paddingBottom: 8,
         justifyContent: 'space-between',
         borderBottomWidth: pixel,
-        borderBottomColor: Color.lavender,
+        borderBottomColor: Color.borderColor,
     },
     centerStyle: {
-        height: 245,
+        marginTop: Size.height * 0.2,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: Color.lightGrey,
     },
     centerImage: {
-        width: 185,
-        height: 76,
-        justifyContent: 'flex-end',
-        alignItems: 'center',
+        width: 110,
+        height: 110,
     },
     centerText: {
+        marginTop: 10,
         fontSize: 14,
-        color: Color.gainsboro2,
+        color: Color.mainColor,
     },
 });

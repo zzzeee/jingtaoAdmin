@@ -175,6 +175,7 @@ export default class Login extends Component {
                                 let params = navigation.state.params;
                                 let _backTo = params && params.backTo ? params.backTo : 'Main';
                                 let _backObj = params && params.backObj ? params.backObj : {};
+                                _backObj.mToken = token;
                                 navigation.navigate(_backTo, _backObj);
                             }
                         });

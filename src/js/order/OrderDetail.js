@@ -13,6 +13,7 @@ import {
     ScrollView,
     Linking,
     Clipboard,
+    RefreshControl,
 } from 'react-native';
 
 import Toast from 'react-native-root-toast';
@@ -22,7 +23,6 @@ import { Size, pixel, } from '../public/globalStyle';
 import { Color } from '../public/theme';
 import OrderGood from './OrderGood';
 import AppHead from '../public/AppHead';
-import OrderCancel from './OrderCancel';
 import ErrorAlert from '../other/ErrorAlert';
 import AlertMoudle from '../other/AlertMoudle';
 
@@ -36,6 +36,7 @@ export default class OrderDetail extends Component {
             load_or_error: null,
             deleteAlert: false,
             showPayModal: false,
+            isRefreshing: true,
         };
         this.mToken = null;
         this.orderNum = null;
@@ -81,16 +82,25 @@ export default class OrderDetail extends Component {
                 console.log(result);
                 if(result && result.sTatus == 1) {
                     this.setState({
+                        isRefreshing: false,
                         orders: result.oAry,
                         load_or_error: null,
                     });
+                }else if(result && result.sTatus == 4) {
+                    this.props.navigation.navigate('Login', {
+                        isRefresh: true,
+                        shopOrderNum: this.shopOrderNum,
+                        shopOrderNum: this.shopOrderNum,
+                    })
                 }
             }, (view)=>{
                 this.setState({
+                    isRefreshing: false,
                     load_or_error: view,
                 });
             }, {
                 loadType: 2,
+                hideLoad: true,
             });
         }
     };
@@ -107,11 +117,6 @@ export default class OrderDetail extends Component {
     //显示取消订单
     showCancelWindow = () => {
         this.setState({showCancelBox: true, });
-    };
-
-    //隐藏取消订单
-    hideCancelWindow = () => {
-        this.setState({showCancelBox: false, });
     };
 
     //显示提示框
@@ -133,7 +138,6 @@ export default class OrderDetail extends Component {
             rightText: rText || '确认',
             leftClick: ()=>this.setState({deleteAlert: false,}),
             rightClick: func,
-            leftColor: '',
             leftBgColor: '#fff',
             rightColor: Color.mainFontColor,
             rightBgColor: '#fff',
@@ -147,19 +151,6 @@ export default class OrderDetail extends Component {
             Linking.openURL('tel: 4000237333')
             .catch(err => console.error('调用电话失败！', err));
         });
-    };
-
-    //取消订单事件
-    cancelCallback = (type, msg) => {
-        this.alertMsg = msg;
-        this.type = type;
-        this.isRefresh = true;
-        this.setState({
-            showCancelBox: false,
-            deleteAlert: false,
-            showAlert: true,
-            orders: null,
-        }, this.getOrderInfo);
     };
 
     render() {
@@ -195,22 +186,22 @@ export default class OrderDetail extends Component {
                 />
                 <View style={styles.container}>
                     {load_or_error ?
-                        load_or_error :
-                        (orders ?
-                            this.orderComponent() : null
-                        )
+                        load_or_error : 
+                        <ScrollView
+                            refreshControl={<RefreshControl
+                                refreshing={this.state.isRefreshing}
+                                onRefresh={()=>{
+                                    this.setState({isRefreshing: true}, this.getOrderInfo);
+                                }}
+                                title="释放立即刷新我..."
+                                tintColor={Color.mainFontColor}
+                                titleColor={Color.mainFontColor}
+                            />}
+                        >
+                            {this.orderComponent()}
+                        </ScrollView>
                     }
                 </View>
-                {showCancelBox ?
-                    <OrderCancel
-                        isShow={showCancelBox}
-                        mToken={this.mToken}
-                        orderID={this.shopOrderNum}
-                        hideWindow={this.hideCancelWindow}
-                        cancelCallback={this.cancelCallback}
-                    />
-                    : null
-                }
                 {deleteAlert ?
                     <AlertMoudle visiable={deleteAlert} {...this.alertObject} />
                     : null
@@ -270,7 +261,7 @@ export default class OrderDetail extends Component {
         this.actualTotal = (totalMoney - oIntegral - oScoupon).toFixed(2);
         if(this.actualTotal < 0) this.actualTotal = 0;
         return (
-            <ScrollView>
+            <View>
                 <View style={{marginTop: 10}}>
                     <View style={styles.bgboxStyle} />
                     <View style={styles.bgboxBody}>
@@ -363,8 +354,7 @@ export default class OrderDetail extends Component {
                         })}
                     </View>
                 </View>
-                
-            </ScrollView>
+            </View>
         )
     };
 

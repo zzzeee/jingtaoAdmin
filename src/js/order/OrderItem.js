@@ -18,7 +18,6 @@ import PropTypes from 'prop-types';
 import Utils from '../public/utils';
 import { Size, pixel, } from '../public/globalStyle';
 import { Color } from '../public/theme';
-import Nothing from '../other/ListNothing';
 import OrderGood from './OrderGood';
 
 export default class OrderComponent extends Component {

@@ -19,10 +19,8 @@ import Urls from '../public/adminApiUrl';
 import { Size, pixel, } from '../public/globalStyle';
 import { Color } from '../public/theme';
 import Lang, {str_replace} from '../public/language';
-import Nothing from '../other/ListNothing';
 import OrderItem from './OrderItem';
 import { EndView } from '../other/publicEment';
-import OrderCancel from './OrderCancel';
 import ErrorAlert from '../other/ErrorAlert';
 import AlertMoudle from '../other/AlertMoudle';
 
@@ -45,10 +43,10 @@ export default class OrderComponent extends Component {
         this.state = {
             orders: null,
             load_or_error: null,
-            showCancelBox: false,
             showAlert: false,
             deleteAlert: false,
             showPayModal: false,
+            isRefreshing: true,
         };
         this.page = 1;
         this.pageNumber = 10;
@@ -65,8 +63,8 @@ export default class OrderComponent extends Component {
     }
 
     //加载订单列表
-    loadOrderList = (isHideLoad = false, isConcat = true) => {
-        let { mToken, orderType, } = this.props;
+    loadOrderList = (isHideLoad = true, isConcat = true) => {
+        let { mToken, orderType, navigation, selectIndex } = this.props;
         if(mToken && !this.loadMoreLock) {
             this.loadMoreLock = true;
             Utils.fetch(Urls.getOrderList, 'post', {
@@ -77,9 +75,16 @@ export default class OrderComponent extends Component {
             }, (result)=>{
                 console.log(result);
                 let obj = {
+                    isRefreshing: false,
                     load_or_error: false,
                 };
-                if(result && result.sTatus == 1 && result.orderAry) {
+                if(result && result.sTatus == 4) {
+                    navigation.navigate('Login', {
+                        backTo: 'Order',
+                        backObj: {selectIndex: selectIndex},
+                    });
+                    return;
+                }else if(result && result.sTatus == 1 && result.orderAry) {
                     let newOrders = result.orderAry || [];
                     let oldOrders = this.state.orders;
                     if(newOrders.length) {
@@ -91,24 +96,14 @@ export default class OrderComponent extends Component {
                 this.setState(obj);
             }, (view)=>{
                 this.setState({
+                    isRefreshing: false,
                     load_or_error: view,
                 });
             }, {
                 loadType: 2,
-                hideLoad: isHideLoad,
+                hideLoad: true,
             });
         }
-    };
-
-    showCancelWindow = (id) => {
-        if(id) {
-            this.orderID = id;
-            this.setState({showCancelBox: true, });
-        }
-    };
-
-    hideCancelWindow = () => {
-        this.setState({showCancelBox: false, });
     };
 
     //刷新页面
@@ -118,7 +113,6 @@ export default class OrderComponent extends Component {
         this.alertMsg = _msg;
         this.type = _type;
         this.setState({
-            showCancelBox: false,
             deleteAlert: false,
             showAlert: true,
         }, ()=>this.loadOrderList(true, false));
@@ -225,66 +219,65 @@ export default class OrderComponent extends Component {
         } = this.props;
         let { 
             load_or_error, 
-            orders, 
-            showCancelBox, 
+            orders,
             showAlert, 
             deleteAlert, 
             showPayModal,
+            isRefreshing,
         } = this.state;
         return (
             <View style={styles.flex}>
-                {load_or_error === null ? 
-                    null :
-                    (load_or_error ?
-                        load_or_error :
-                        (orders && orders.length ?
-                            <View style={styles.flex}>
-                                <FlatList
-                                    ref={get_list_ref}
-                                    data={orders}
-                                    keyExtractor={(item, index)=>(index)}
-                                    renderItem={this._renderItem}
-                                    onEndReached={()=>this.loadOrderList(true)}
-                                    ListFooterComponent={()=>{
-                                        if(orders.length > 1) {
-                                            return <EndView />;
-                                        }else {
-                                            return <View />;
-                                        }
-                                    }}
-                                />
-                                {showCancelBox ?
-                                    <OrderCancel
-                                        isShow={showCancelBox}
-                                        mToken={mToken}
-                                        orderID={this.orderID}
-                                        hideWindow={this.hideCancelWindow}
-                                        cancelCallback={this.refreshList}
-                                    />
-                                    : null
+                {load_or_error ?
+                    load_or_error :
+                    <View style={styles.flex}>
+                        <FlatList
+                            ref={get_list_ref}
+                            data={orders}
+                            keyExtractor={(item, index)=>(index)}
+                            renderItem={this._renderItem}
+                            refreshing={isRefreshing}
+                            onRefresh={()=>{
+                                this.page = 1;
+                                this.loadMoreLock = false;
+                                this.setState({
+                                    isRefreshing: true,
+                                    orders: null,
+                                }, this.loadOrderList);
+                            }}
+                            onEndReached={()=>this.loadOrderList(true)}
+                            ListFooterComponent={()=>{
+                                if(orders && orders.length > 1) {
+                                    return <EndView />;
+                                }else {
+                                    return <View />;
                                 }
-                                {showAlert ?
-                                    <ErrorAlert 
-                                        type={this.type}
-                                        visiable={showAlert}
-                                        message={this.alertMsg}
-                                        hideModal={this.hideAutoModal}
-                                    />
-                                    : null
+                            }}
+                            ListHeaderComponent={()=>{
+                                if(orders && orders.length) return null;
+                                else {
+                                    return (
+                                        <View style={styles.centerStyle}>
+                                            <Image source={require('../../images/order/no_order.png')} style={styles.centerImage} />
+                                            <Text numberOfLines={1} style={styles.centerText}>这里没有订单</Text>
+                                        </View>
+                                    );
                                 }
-                                {deleteAlert ?
-                                    <AlertMoudle visiable={deleteAlert} {...this.alertObject} />
-                                    : null
-                                }
-                            </View> :
-                            <Nothing
-                                navigation={navigation}
-                                text={notingString}
-                                get_list_ref={get_list_ref}
-                                getListEment={getListEment}
+                            }}
+                        />
+                        {showAlert ?
+                            <ErrorAlert 
+                                type={this.type}
+                                visiable={showAlert}
+                                message={this.alertMsg}
+                                hideModal={this.hideAutoModal}
                             />
-                        )
-                    )
+                            : null
+                        }
+                        {deleteAlert ?
+                            <AlertMoudle visiable={deleteAlert} {...this.alertObject} />
+                            : null
+                        }
+                    </View>
                 }
             </View>
         );
@@ -297,7 +290,6 @@ export default class OrderComponent extends Component {
                 mToken={mToken}
                 navigation={navigation}
                 orderInfo={item}
-                showCancel={this.showCancelWindow}
                 showAlert={this.showAlertMoudle}
                 showWarnMsg={this.showAutoModal}
                 changeOrderStatu={this.changeOrderStatu}
@@ -311,5 +303,19 @@ export default class OrderComponent extends Component {
 var styles = StyleSheet.create({
     flex: {
         flex: 1,
+    },
+    centerStyle: {
+        height: Size.height - 20 - 50 - 50 -10,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    centerImage: {
+        height: 110,
+        width: 110,
+    },
+    centerText: {
+        fontSize: 14,
+        color: '#72A5F6',
+        marginTop: 10,
     },
 });
