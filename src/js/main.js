@@ -59,7 +59,7 @@ export default class Main extends Component {
                         shopName: ret.shopInfo.sShopName || null,
                         shopUser: ret.shopInfo.linkmanTel || null,
                         shopHead: ret.shopInfo.sLogo || null,
-                        isRefreshing: false,
+                        // isRefreshing: false,
                     });
                 }
             }else {
@@ -118,13 +118,13 @@ export default class Main extends Component {
                         <Text style={styles.foregroundTitleText}>境淘生意宝</Text>
                     </View>
                 )}
-                refreshControl={<RefreshControl
-                    refreshing={isRefreshing}
-                    onRefresh={this.initPage}
-                    title="释放立即刷新我..."
-                    tintColor={Color.mainFontColor}
-                    titleColor={Color.mainFontColor}
-                />}
+                // refreshControl={<RefreshControl
+                //     refreshing={isRefreshing}
+                //     onRefresh={this.initPage}
+                //     title="释放立即刷新我..."
+                //     tintColor={Color.mainFontColor}
+                //     titleColor={Color.mainFontColor}
+                // />}
             >
                 <View style={styles.btnBody}>
                     {this.btnItem(styles.btnStyle2, require('../images/home/order.png'), '订单管理', 'Order')}
@@ -193,6 +193,7 @@ const styles = StyleSheet.create({
     foregroundTitleText: {
         fontSize: 16,
         color: '#fff',
+        fontWeight: 'bold',
     },
     foregroundBody: {
         marginTop: 50,
@@ -248,14 +249,14 @@ const styles = StyleSheet.create({
     },
     modelStyle: {
         width: Size.width * 0.7,
-        height: 78,
+        height: 90,
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
         borderRadius: 10,
     },
     modelText: {
-        fontSize: 20,
+        fontSize: 18,
         color: '#fff',
     },
 });

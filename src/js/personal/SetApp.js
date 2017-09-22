@@ -56,7 +56,7 @@ export default class SetApp extends Component {
         return (
             <View style={styles.container}>
                 <AppHead
-                    title={'设置'}
+                    title={'系统设置'}
                     goBack={true}
                     navigation={navigation}
                 />

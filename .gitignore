@@ -73,6 +73,7 @@ android/app/src/main/assets/index.android.bundle.meta
 ### 注：前面有个！, 除这个文件/文件夹以外
 #android/app/src/main/res
 #!android/app/src/main/res/values
+!android/app/src/main/res/values
 android/app/src/main/res/drawable-hdpi
 android/app/src/main/res/drawable-mdpi
 android/app/src/main/res/drawable-xhdpi

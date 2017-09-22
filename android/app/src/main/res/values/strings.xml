@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">jingtaoAdmin</string>
+    <string moduleConfig="true" name="reactNativeCodePush_androidDeploymentKey">T0_wvE_gTHQIW8SsNlK1aDDnq78p801449b1-ebd7-49d6-aa73-b80e0e04e58c</string>
+    <string name="app_name">境淘生意宝</string>
 </resources>

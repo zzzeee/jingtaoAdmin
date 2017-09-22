@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
         fontSize : 14,
         textAlignVertical: 'center',
         borderWidth: pixel,
-        borderColor: Color.borderColor,
+        borderColor: Color.grayFontColor,
         borderRadius: 5,
     },
 });

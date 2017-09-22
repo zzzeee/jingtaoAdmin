@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
     inputViewBox: {
         height: 40,
         borderWidth: pixel,
-        borderColor: Color.borderColor,
+        borderColor: Color.grayFontColor,
         borderRadius: 5,
         justifyContent: 'center',
         paddingLeft: 10,

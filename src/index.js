@@ -12,7 +12,7 @@ import {
     View,
 } from 'react-native';
 import App from './js/';
-// import CodePush from "react-native-code-push";
+import CodePush from "react-native-code-push";
 import { Size, PX } from './js/public/globalStyle';
 import {Color} from './js/public/theme';
 import { NavigationActions } from 'react-navigation';
@@ -34,7 +34,7 @@ class JingtaoApp extends Component {
 
     componentDidMount() {
         // // 直接更新
-        // if(!__DEV__) CodePush.sync();
+        if(!__DEV__) CodePush.sync();
     }
 
     render() {

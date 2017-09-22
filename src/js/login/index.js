@@ -421,8 +421,11 @@ const styles = StyleSheet.create({
     },
     inputMiddleStyle: {
         flex: 1,
+        borderBottomWidth: pixel,
+        borderBottomColor: Color.grayFontColor,
     },
     inputStyle: {
+        padding: 5,
         borderWidth: 0,
         fontSize: 13,
         textAlign: 'center',
@@ -438,8 +441,8 @@ const styles = StyleSheet.create({
     },
     btnLoginBox: {
         height: 40,
-        width: Size.width * 0.8,
-        marginLeft: Size.width * 0.1,
+        width: Size.width - 30,
+        marginLeft: 15,
         justifyContent: 'center',
         alignItems: 'center',
         marginTop: 36,
