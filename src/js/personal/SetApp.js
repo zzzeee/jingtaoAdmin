@@ -12,7 +12,6 @@ import {
     Image,
     TouchableOpacity,
     ScrollView,
-    Platform,
     Linking,
 } from 'react-native';
 
@@ -20,10 +19,8 @@ import { NavigationActions } from 'react-navigation';
 import DeviceInfo from 'react-native-device-info';
 
 import User from '../public/user';
-import Urls from '../public/apiUrl';
-import Utils, {Loading} from '../public/utils';
-import Lang, {str_replace, TABKEY} from '../public/language';
-import { Size, Color, PX, pixel, FontSize } from '../public/globalStyle';
+import { Size, pixel, } from '../public/globalStyle';
+import { Color } from '../public/theme';
 import AppHead from '../public/AppHead';
 import ErrorAlert from '../other/ErrorAlert';
 import AlertMoudle from '../other/AlertMoudle';
@@ -34,7 +31,6 @@ export default class SetApp extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            showAlert: false,
             deleteAlert: false,
             alertObject: {},
         };
@@ -42,20 +38,6 @@ export default class SetApp extends Component {
         this.alertMsg = null;
         this.updateUrl = null;
     }
-
-    //显示提示框
-    showAutoModal = (msg) => {
-        this.alertMsg = msg;
-        this.setState({
-            showAlert: true, 
-            deleteAlert: false,
-        });
-    };
-
-    //隐藏提示框
-    hideAutoModal = () => {
-        this.setState({ showAlert: false });
-    };
 
     //显示删除提示框
     showAlertMoudle = (obj, callback = null) => {
@@ -67,7 +49,7 @@ export default class SetApp extends Component {
 
     render() {
         let { navigation, } = this.props;
-        let { deleteAlert, alertObject, showAlert } = this.state;
+        let { deleteAlert, alertObject, } = this.state;
         let version = DeviceInfo.getVersion() || '';
         let params = (navigation && navigation.state.params) ? navigation.state.params : {};
         let token = params.mToken ? params.mToken : null;
@@ -84,21 +66,42 @@ export default class SetApp extends Component {
                             width: 60,
                             height: 60,
                         }} />
-                        <Text style={styles.fontSize1}>境淘土特产</Text>
+                        <Text style={styles.fontSize1}>境淘生意宝</Text>
                         <Text style={styles.fontSize2}>{'版本号 ' + version}</Text>
                     </View>
                     <View style={styles.belowBox}>
-                        <TouchableOpacity style={styles.btnRowStyle} onPress={()=>navigation.navigate('JTteam')}>
-                            <Text style={styles.fontSize4}>境淘团队</Text>
+                        <TouchableOpacity style={styles.btnRowStyle} onPress={()=>{
+                            this.showAlertMoudle({
+                                text: '客服号码: 400-023-7333',
+                                rightText: '呼叫',
+                                leftText: '取消',
+                                rightColor: '#fff',
+                                leftClick: ()=>this.setState({deleteAlert: false,}),
+                                rightClick: ()=>{
+                                    this.setState({deleteAlert: false,}, ()=>{
+                                        Linking.openURL('tel: 4000237333')
+                                        .catch(err => console.error('调用电话失败！', err));
+                                    });
+                                },
+                            });
+                        }}>
+                            <Text style={styles.fontSize4}>联系境淘</Text>
                             <Image source={require('../../images/list_more.png')} style={styles.leftIcon} />
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={()=>{
+                        <TouchableOpacity style={styles.btnRowStyle} onPress={()=>navigation.navigate('JTteam')}>
+                            <Text style={styles.fontSize4}>开发团队</Text>
+                            <Image source={require('../../images/list_more.png')} style={styles.leftIcon} />
+                        </TouchableOpacity>
+                        <TouchableOpacity style={[styles.btnRowStyle, {
+                            marginTop: 30,
+                        }]} onPress={()=>{
                             this.showAlertMoudle({
                                 text: '是否注销当前帐号',
-                                rightText: Lang[Lang.default].cancel,
-                                leftText: '退出',
-                                rightClick: ()=>this.setState({deleteAlert: false,}),
-                                leftClick: ()=>{
+                                rightText: '退出',
+                                leftText: '取消',
+                                rightColor: '#fff',
+                                leftClick: ()=>this.setState({deleteAlert: false,}),
+                                rightClick: ()=>{
                                     _User.delUserID()
                                     .then(()=>{
                                         this.setState({deleteAlert: false,}, ()=>{
@@ -113,22 +116,14 @@ export default class SetApp extends Component {
                                     });
                                 },
                             });
-                        }} style={styles.btnLogOut}>
-                            <Text style={styles.fontSize3}>退出登录</Text>
+                        }}>
+                            <Text style={styles.fontSize4}>退出登陆</Text>
+                            <Image source={require('../../images/list_more.png')} style={styles.leftIcon} />
                         </TouchableOpacity>
                     </View>
                 </ScrollView>
                 {deleteAlert ?
                     <AlertMoudle visiable={deleteAlert} {...alertObject} />
-                    : null
-                }
-                {showAlert ?
-                    <ErrorAlert 
-                        type={this.type}
-                        visiable={showAlert}
-                        message={this.alertMsg}
-                        hideModal={this.hideAutoModal}
-                    />
                     : null
                 }
             </View>
@@ -142,10 +137,10 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        backgroundColor: Color.floralWhite,
+        backgroundColor: Color.lightBgColor2,
     },
     aboveBox: {
-        marginTop: 20,
+        marginTop: 30,
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -157,78 +152,34 @@ const styles = StyleSheet.create({
     scollStyle: {
         width: Size.width * 0.8 - 30,
     },
-    updateBox : {
-        alignItems: 'flex-start',
-        backgroundColor: Color.floralWhite,
-        maxHeight: Size.height * 0.4,
-    },
-    updateTitle: {
-        color: Color.mainColor,
-        fontSize: 14,
-        lineHeight: 22,
-        paddingBottom: 2,
-        fontWeight: 'bold',
-        textShadowColor: '#ccc',
-        textShadowOffset: {
-            width: 1,
-            height: 1.6,
-        },
-        textShadowRadius: 2,
-    },
-    versionCode: {
-        paddingBottom: 10,
-        fontSize: 12,
-        color: Color.gray,
-    },
-    updateText: {
-        color: Color.lightBack,
-        fontSize: 12,
-        lineHeight: 20,
-    },
     btnRowStyle: {
         width: Size.width,
-        height: PX.rowHeight2,
-        paddingLeft: PX.marginLR,
-        paddingRight: PX.marginLR,
+        height: 44,
+        paddingLeft: 15,
+        paddingRight: 15,
         justifyContent: 'space-between',
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: '#fff',
-        borderBottomColor: Color.lavender,
+        borderBottomColor: Color.borderColor,
         borderBottomWidth: pixel,
-    },
-    btnLogOut: {
-        marginTop: 50,
-        borderWidth: 1,
-        borderColor: Color.mainColor,
-        borderRadius: 3,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#fff',
-        width: Size.width - 30,
-        height: PX.rowHeight2,
     },
     fontSize1: {
         fontSize: 16,
-        color: Color.lightBack,
+        color: Color.mainFontColor,
         fontWeight: 'bold',
         paddingTop: 5,
         backgroundColor: 'transparent',
     },
     fontSize2: {
         fontSize: 12,
-        color: Color.lightBack,
+        color: Color.mainFontColor,
         paddingTop: 3,
-        backgroundColor: 'transparent',
-    },
-    fontSize3: {
-        fontSize: 14,
-        color: Color.mainColor,
         backgroundColor: 'transparent',
     },
     fontSize4: {
         fontSize: 13,
-        color: Color.lightBack,
+        color: Color.mainFontColor,
         backgroundColor: 'transparent',
     },
 });

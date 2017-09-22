@@ -14,8 +14,8 @@ import {
     ScrollView,
 } from 'react-native';
 
-import Lang, {str_replace} from '../public/language';
-import { Size, Color, PX, pixel, FontSize } from '../public/globalStyle';
+import { Size, pixel, } from '../public/globalStyle';
+import { Color } from '../public/theme';
 import AppHead from '../public/AppHead';
 
 export default class JTteam extends Component {
@@ -26,23 +26,23 @@ export default class JTteam extends Component {
     }, {
         name: '权龙云',
         position: '技术副总监',
-        details: '全栈工程师, 在韩国工作期间, 因鬼异的编程能力被遣送回国, 为本项目注入了一股来自黑洞空间的神秘力量',
+        details: '全栈工程师, 在韩国工作期间, 因鬼异的编程能力被遣送回国, 为本项目注入了一股来自暗黑幽灵的力量',
     }, {
         name: '汪颖恺',
         position: '项目经理',
-        details: '看似变态怪哥哥的外表, 却是倚杖老太的导盲犬, 技术团队的节奏怂恿者, 公司开路的英勇烈士',
+        details: '看似变态怪哥哥的外表, 却是倚杖老太的导盲犬, 技术团队的节奏怂恿者, 公司开路的英勇烈士, 汪汪汪...',
     }, {
-        name: '詹敏',
+        name: '丁娟',
         position: 'UI设计师',
-        details: '来自国企的八次元少女, 拿着方方块块的积木, 没有堆砌不起来的世界。 本项目的主要UI设计者',
+        details: '哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈, 年度最佳捧场新秀',
     }, {
         name: '吴迪',
         position: '标注切图大师',
-        details: '社会我迪哥人怂话又多, 虽然看起来又壮又胖, 但标注能力之强, 切图速度之快, 东北没有第二人',
+        details: '社会我迪哥人怂话又多, 虽然看起来又壮又胖, 但标注能力之强, 切图速度之快, 东北智障院找不出第二个',
     }, {
-        name: '张浩天',
+        name: '毛健辉',
         position: 'IOS工程师',
-        details: '著名不知名大学毕业, 乔布斯生前的编程导师, 一秒六行代码, 三天九个项目, 就问你服不服',
+        details: '毛毛燥燥的傻阿辉, 乔布斯生前的编程导师, 一秒六行代码, 三天九个项目, 就问你服不服',
     }, {
         name: '罗松超',
         position: 'ANDROID工程师',
@@ -58,7 +58,7 @@ export default class JTteam extends Component {
     }, {
         name: '邓铮',
         position: '网络运维',
-        details: '本项目的官方指定测试员, 实时监听服务器的异常事件, 没日没夜的为技术部门解(zhi)决(zao)BUG',
+        details: '本项目的官方指定测试员, 实时监听服务器的异常事件, 没日没夜的为技术部门解(zhi)决(zao)难题',
     },];
 
     render() {
@@ -115,22 +115,22 @@ const styles = StyleSheet.create({
     },
     nameText: {
         fontSize: 14,
-        color: Color.lightBack,
+        color: Color.mainFontColor,
     },
     positionText: {
         paddingLeft: 10,
         fontSize: 13,
-        color: Color.gainsboro,
+        color: Color.grayFontColor,
     },
     detailView: {
         marginTop: 8,
         paddingTop: 6,
-        borderTopColor: Color.lavender,
+        borderTopColor: Color.borderColor,
         borderTopWidth: pixel,
     },
     detailsText: {
         fontSize: 13,
-        color: Color.lightBack,
+        color: Color.mainFontColor,
         lineHeight: 20,
     },
 });

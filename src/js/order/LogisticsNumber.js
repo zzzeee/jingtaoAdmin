@@ -10,7 +10,6 @@ import {
     View,
     Image,
     ScrollView,
-    RefreshControl,
     TouchableOpacity,
     DeviceEventEmitter,
 } from 'react-native';
@@ -31,7 +30,6 @@ export default class LogisticsNumber extends Component {
             canQuery: true,
             logistyNumber: null,
             logistyCompany: null,
-            isRefreshing: false,
         };
         this.params = null;
     }
@@ -49,10 +47,9 @@ export default class LogisticsNumber extends Component {
                 navigation.navigate('Login', {
                     backTo: 'LogisticsNumber',
                 });
-            }else if(this.params.logistyNumber) {
+            }else if(this.params.logistyNumber && this.params.logistyNumber != this.state.logistyNumber) {
                 this.setState({
                     logistyNumber: this.params.logistyNumber,
-                    isRefreshing: true,
                 }, this.queryExpress);
             }
         }
@@ -70,43 +67,36 @@ export default class LogisticsNumber extends Component {
     queryExpress = () => {
         let number = this.state.logistyNumber;
         if(this.params.mToken && number && this.state.canQuery) {
-            if(this.state.isRefreshing) {
-                Utils.fetch(Urls.getExpressInfo, 'post', {
-                    sToken: this.params.mToken,
-                    exPressNum: number,
-                }, (result) => {
-                    console.log(result);
-                    let obj = {
-                        canQuery: false,
-                        isRefreshing: false,
-                    };
-                    if(result) {
-                        if(result.sTatus == 1 && result.exPreAy) {
-                            if(result.exPreAy.showapi_res_body && result.exPreAy.showapi_res_code == 0) {
-                                let name = result.exPreAy.showapi_res_body.expTextName || null;
-                                if(name) {
-                                    obj.isError = false;
-                                    obj.logistyCompany = name;
-                                }
-                            }else if(result.exPreAy.showapi_res_error) {
-                                obj.isError = true;
-                                obj.logistyCompany = '查询不到该物流单号';
+            Utils.fetch(Urls.getExpressInfo, 'post', {
+                sToken: this.params.mToken,
+                exPressNum: number,
+            }, (result) => {
+                console.log(result);
+                let obj = {
+                    canQuery: false,
+                };
+                if(result) {
+                    if(result.sTatus == 1 && result.exPreAy) {
+                        if(result.exPreAy.showapi_res_body && result.exPreAy.showapi_res_code == 0) {
+                            let name = result.exPreAy.showapi_res_body.expTextName || null;
+                            if(name) {
+                                obj.isError = false;
+                                obj.logistyCompany = name;
                             }
-                        }else {
+                        }else if(result.exPreAy.showapi_res_error) {
                             obj.isError = true;
-                            obj.logistyCompany = '输入错误';
+                            obj.logistyCompany = '查询不到该物流单号';
                         }
                     }else {
                         obj.isError = true;
                         obj.logistyCompany = '输入错误';
                     }
-                    this.setState(obj);
-                });
-            }else {
-                this.setState({
-                    isRefreshing: true,
-                }, this.queryExpress);
-            }
+                }else {
+                    obj.isError = true;
+                    obj.logistyCompany = '输入错误';
+                }
+                this.setState(obj);
+            });
         }
     };
 
@@ -141,7 +131,7 @@ export default class LogisticsNumber extends Component {
 
     render() {
         let { navigation } = this.props;
-        let { logistyNumber, logistyCompany, isError, isRefreshing } = this.state;
+        let { logistyNumber, logistyCompany, isError } = this.state;
         let number = logistyNumber || '';
         let company = logistyCompany || '输入物流单号自动识别快递公司';
         let color = isError ? Color.redFontColor : Color.grayFontColor;
@@ -156,16 +146,7 @@ export default class LogisticsNumber extends Component {
                         this.props.navigation.navigate(_backTo, this.params);
                     }}
                 />
-                <ScrollView
-                    keyboardShouldPersistTaps="handled"
-                    refreshControl={<RefreshControl
-                        refreshing={isRefreshing}
-                        onRefresh={this.initPage}
-                        title="释放立即刷新我..."
-                        tintColor={Color.mainFontColor}
-                        titleColor={Color.mainFontColor}
-                    />}
-                >
+                <ScrollView keyboardShouldPersistTaps="handled">
                     <View style={styles.itemBox}>
                         <View style={styles.textBox}>
                             <Text style={styles.itemTitle}>物流单号:</Text>

@@ -24,8 +24,8 @@ export default class AlertMoudle extends Component {
         visiable: false,
         leftColor: Color.mainFontColor,
         rightColor: Color.mainFontColor,
-        leftBgColor: Color.mainColor,
-        rightBgColor: Color.grayFontColor,
+        leftBgColor: Color.borderColor,
+        rightBgColor: Color.mainColor,
     };
     // 参数类型
     static propTypes = {

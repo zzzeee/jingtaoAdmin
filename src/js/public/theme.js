@@ -11,7 +11,8 @@ import {
 //生意宝共用颜色
 export const Color = {
     lightBgColor: '#F8F8F8',
-    borderColor: '#9B9B9B',
+    lightBgColor2: '#EFEFEF',
+    borderColor: '#E7E7E7',
     mainFontColor: '#4A4A4A',
     mainColor: '#2B99F7',
     grayFontColor: '#9B9B9B',

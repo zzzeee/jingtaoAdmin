@@ -48,15 +48,11 @@ export default class Barcode extends Component {
             this.barcode = e.data;
             this.bartype = e.type;
             // console.log(e);
-            let obj = Object.assign({
-                logistyNumber: e.data.substring(0, 32),
-            }, this.params);
-            // this.props.navigation.navigate('LogisticsNumber', obj);
-            
+            this.params.logistyNumber = e.data.substring(0, 32);
             const resetAction = NavigationActions.reset({
               index: 0,
               actions: [
-                NavigationActions.navigate({ routeName: 'LogisticsNumber', params: obj}),
+                NavigationActions.navigate({ routeName: 'LogisticsNumber', params: this.params}),
               ]
             })
             this.props.navigation.dispatch(resetAction)
@@ -128,6 +124,7 @@ const styles = StyleSheet.create({
     iconItem: {
         alignItems: 'center',
         justifyContent: 'center',
+        // backgroundColor: 'rgba(0, 0, 0, 0.2)',
     },
     iconStyle: {
         width: 50,

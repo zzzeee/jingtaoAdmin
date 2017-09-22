@@ -132,7 +132,7 @@ export default class Main extends Component {
                     {this.btnItem(null, require('../images/home/market.png'), '店铺设置')}
                     {this.btnItem(styles.btnStyle1, require('../images/home/password.png'), '修改密码')}
                     {this.btnItem(styles.btnStyle1, require('../images/home/proposal.png'), '意见反馈')}
-                    {this.btnItem(styles.btnStyle1, require('../images/home/config.png'), '系统设置')}
+                    {this.btnItem(styles.btnStyle3, require('../images/home/config.png'), '系统设置', 'SetApp')}
                 </View>
                 {showAlert ?
                     <ErrorAlert 
@@ -232,6 +232,10 @@ const styles = StyleSheet.create({
     btnStyle2: {
         borderRightWidth: 0.3,
         borderRightColor: Color.borderColor,
+    },
+    btnStyle3: {
+        borderTopWidth: 0.3,
+        borderTopColor: Color.borderColor,
     },
     btnImageStyle: {
         width: 50,
