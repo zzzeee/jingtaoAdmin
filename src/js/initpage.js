@@ -11,14 +11,16 @@ import {
     View,
 } from 'react-native';
 
+import DeviceInfo from 'react-native-device-info';
 import JPushModule from 'jpush-react-native';
+import Utils, { Loading, } from './public/utils';
+import Urls from './public/adminApiUrl';
+import User from './public/user';
+var _User = new User();
 const receiveCustomMsgEvent = "receivePushMsg";
 const receiveNotificationEvent = "receiveNotification";
 const openNotificationEvent = "openNotification";
 const getRegistrationIdEvent = "getRegistrationId";
-
-import User from './public/user';
-var _User = new User();
 
 export default class PushActivity extends Component {
 	constructor(props) {
@@ -28,6 +30,7 @@ export default class PushActivity extends Component {
 	}
 
 	componentWillMount() {
+        //极光推送事件
         JPushModule.getInfo((map) => {
             // console.log(map);
             /**
@@ -46,6 +49,10 @@ export default class PushActivity extends Component {
             if(!this.force) {
                 // this.getLocalToken();
                 _User.getUserID().then((result)=>{
+                    //添加设备记录
+                    let obj = this.AppDeviceInfo(result);
+                    // console.log(obj);
+                    Utils.fetch(Urls.addDeviceLog, 'post', obj, null);
                     if(!this.force && this.props && this.props.navigation) {
                         if(result) {
                             this.props.navigation.navigate('Main');
@@ -74,39 +81,12 @@ export default class PushActivity extends Component {
                 this.force = true;
                 let params = JSON.parse(map.extras) || {};
                 if(params && params.orderID) {
-                    if(this.props && this.props.navigation) {
-                        this.props.navigation.navigate('OrderDetail', {
-                            isRefresh: true,
-                            shopOrderNum: params.orderID,
-                        });
-                    }else {
-                        this.timer = setTimeout(()=>{
-                            if(this.props && this.props.navigation) {
-                                this.props.navigation.navigate('OrderDetail', {
-                                    isRefresh: true,
-                                    shopOrderNum: params.orderID,
-                                });
-                            }else {
-                                this.timer = setTimeout(()=>{
-                                    if(this.props && this.props.navigation) {
-                                        this.props.navigation.navigate('OrderDetail', {
-                                            isRefresh: true,
-                                            shopOrderNum: params.orderID,
-                                        });
-                                    }else {
-                                        this.timer = setTimeout(()=>{
-                                            if(this.props && this.props.navigation) {
-                                                this.props.navigation.navigate('OrderDetail', {
-                                                    isRefresh: true,
-                                                    shopOrderNum: params.orderID,
-                                                });
-                                            }
-                                        }, 500);
-                                    }
-                                }, 400);
-                            }
-                        }, 300);
-                    }
+                    this.autoLoopNav('OrderDetail', {
+                        isRefresh: true,
+                        shopOrderNum: params.orderID,
+                    });
+                }else {
+                    this.autoLoopNav('Main');
                 }
             }
             /*
@@ -125,7 +105,66 @@ export default class PushActivity extends Component {
 
 	componentDidMount() {
         
-	}
+    }
+
+    //APP设备记录
+    AppDeviceInfo = (token = null) => {
+        let dArea = DeviceInfo.getDeviceLocale();   //设备地区
+        let dCity = DeviceInfo.getDeviceCountry();  //设备城市
+        let userAgent = DeviceInfo.getUserAgent();  //操作系统及版本
+        let dName = DeviceInfo.getDeviceName();     //设备名称
+        let readableVersion = DeviceInfo.getReadableVersion();
+        let version = DeviceInfo.getVersion();      //版本名称
+        let buildNumber = DeviceInfo.getBuildNumber();
+        let bundleId = DeviceInfo.getBundleId();    //包名
+        let systemVersion = DeviceInfo.getSystemVersion();
+        let systemName = DeviceInfo.getSystemName();
+        let deviceID = DeviceInfo.getDeviceId();
+        let model = DeviceInfo.getModel();  //型号
+        let brand = DeviceInfo.getBrand();  //品牌
+        let manufacturer = DeviceInfo.getManufacturer();    //制造商
+        let isEmulator = DeviceInfo.isEmulator();           //是否为虚拟机
+        let obj = {
+            'userAgent': userAgent,
+            'deviceName': 'aaaaa' + dName,
+            'version': version,
+            'buildNumber': buildNumber,
+            'bundleId': bundleId,
+            'sysVersion': systemVersion,
+            'sysName': systemName,
+            'deviceID': deviceID,
+            'dModel': model,
+            'dBrand': brand,
+            'manufacturer': manufacturer,
+            'isEmulator': isEmulator ? 2 : 1,
+            'uniqueID': DeviceInfo.getUniqueID(),
+        };
+        if(token) obj.mToken = token;
+        // console.log(obj);
+        return obj;
+    };
+    
+    /**
+     * 循环跳转罗拉
+     * @param nav           string  跳转的router
+     * @param navObj        object  跳转的params
+     * @param startTime     int     每次检查的时间
+     * @param loopNumber    int     超时次数
+     */
+    autoLoopNav = (nav, navObj = {}, startTime = 250, loopNumber = 5) => {
+        if(loopNumber <= 0) return false; 
+        if(this.props && this.props.navigation) {
+            this.props.navigation.navigate(nav, navObj);
+        }else {
+            this.timer = setTimeout(()=>{
+                if(this.props && this.props.navigation) {
+                    this.props.navigation.navigate(nav, navObj);
+                }else {
+                    return this.autoLoopNav(nav, navObj, startTime, --loopNumber);
+                }
+            }, startTime);
+        }
+    };
 
 	componentWillUnmount() {
         this.timer && clearTimeout(this.timer);
@@ -138,11 +177,13 @@ export default class PushActivity extends Component {
     }
     
     getLocalToken = async () => {
-        this.token = await _User.getUserID().then((result)=>result);
-        if(this.token) {
-            this.props.navigation.navigate('Main');
-        }else {
-            this.props.navigation.navigate('Login');
+        if(!this.force && this.props && this.props.navigation) {
+            this.token = await _User.getUserID().then((result)=>result);
+            if(this.token) {
+                this.props.navigation.navigate('Main');
+            }else {
+                this.props.navigation.navigate('Login');
+            }
         }
     };
 

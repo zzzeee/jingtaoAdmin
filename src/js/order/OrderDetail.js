@@ -210,6 +210,21 @@ export default class OrderDetail extends Component {
                         </ScrollView>
                     }
                 </View>
+                {this.titleBtns && this.titleBtns.btns2.length > 0 ?
+                    <View style={styles.totalBox}>
+                        {this.titleBtns.btns2.map((item, index)=>{
+                            let _bgColor = item.bgColor || Color.mainColor;
+                            return (
+                                <TouchableOpacity key={index} style={[].concat(styles.btnStyle3, {
+                                    backgroundColor: _bgColor,
+                                })} onPress={item.fun}>
+                                    <Text style={styles.fontStyle4}>{item.val}</Text>
+                                </TouchableOpacity>
+                            );
+                        })}
+                    </View>
+                    : null
+                }
                 {deleteAlert ?
                     <AlertMoudle visiable={deleteAlert} {...this.alertObject} />
                     : null
@@ -345,21 +360,6 @@ export default class OrderDetail extends Component {
                             件商品, 合计：
                             <Text style={styles.redColor}>{' ¥' + this.actualTotal}</Text>
                         </Text>
-
-                    </View>
-                    <View style={styles.totalBox}>
-                        {this.titleBtns.btns2.map((item, index)=>{
-                            let _bgColor = item.bgColor || '#4A4A4A';
-                            return (
-                                <TouchableOpacity key={index} style={[].concat(styles.btnStyle3, {
-                                    borderColor: _bgColor,
-                                })} onPress={item.fun}>
-                                    <Text style={[].concat(styles.fontStyle4, {
-                                        color: _bgColor,
-                                    })}>{item.val}</Text>
-                                </TouchableOpacity>
-                            );
-                        })}
                     </View>
                 </View>
             </View>
@@ -445,6 +445,7 @@ export default class OrderDetail extends Component {
             btns1: [],
             btns2: [{
                 val: '联系境淘',
+                bgColor: '#3E99E7',
                 fun: ()=>{
                     that.showAlertMoudle(
                         '客服号码: 400-023-7333',
@@ -479,7 +480,7 @@ export default class OrderDetail extends Component {
                     obj.text2 = '';
                     obj.btns2.push({
                         val: '立即发货',
-                        bgColor: '#EB5144',
+                        bgColor: '#2989DB',
                         fun: ()=>{
                             let obj = Object.assign({backTo: 'OrderDetail'}, this.params);
                             navigation.navigate('LogisticsNumber', obj);
@@ -494,6 +495,7 @@ export default class OrderDetail extends Component {
                     obj.text2 = expirationDate ? expirationDate + '后自动确认收货' : '';
                     obj.btns2.push({
                         val: '查看物流',
+                        bgColor: '#2989DB',
                         fun: ()=>{
                             let obj = Object.assign({
                                 Logistics: expressData,
@@ -568,25 +570,22 @@ var styles = StyleSheet.create({
     },
     fontStyle4: {
         fontSize: 13,
-        color: Color.mainFontColor,
+        color: '#fff',
     },
     btnStyle3: {
-        width: 72,
-        height: 27,
+        width: 106,
+        height: 50,
         justifyContent: 'center',
         alignItems: 'center',
-        marginLeft: 15,
-        marginRight: 5,
-        borderWidth: 1,
-        borderRadius: 3,
     },
     totalBox: {
         height: 50,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'flex-end',
-        paddingLeft: 15,
-        paddingRight: 15,
+        borderTopColor: Color.borderColor,
+        borderTopWidth: pixel,
+        backgroundColor: '#fff',
     },
     defaultFont: {
         color: Color.mainFontColor,

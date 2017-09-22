@@ -21,7 +21,7 @@ import {
 import DeviceInfo from 'react-native-device-info';
 import { NavigationActions } from 'react-navigation';
 import JPushModule from 'jpush-react-native';
-import Utils, { Loading, AppDeviceInfo } from '../public/utils';
+import Utils, { Loading, } from '../public/utils';
 import Urls from '../public/adminApiUrl';
 import InputText from '../public/InputText';
 import Lang, {str_replace, TABKEY} from '../public/language';
@@ -180,7 +180,7 @@ export default class Login extends Component {
             'isEmulator': isEmulator ? 2 : 1,
             'uniqueID': DeviceInfo.getUniqueID(),
         };
-        if(token) obj.mToken = this.token;
+        if(token) obj.mToken = token;
         // console.log(obj);
         return obj;
     };
