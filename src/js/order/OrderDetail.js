@@ -640,6 +640,10 @@ var styles = StyleSheet.create({
         paddingLeft: 20,
         marginTop: 15,
         alignItems: 'center',
+        height: 35,
+        backgroundColor: '#FBFBFB',
+        marginLeft: 1,
+        marginRight: 1,
     },
     btnCopy: {
         paddingVertical: 2,
@@ -649,7 +653,7 @@ var styles = StyleSheet.create({
         borderWidth: 1,
     },
     btnCopyText: {
-        fontSize: 13,
+        fontSize: 12,
         color: Color.grayFontColor,
     },
     leftCircular: {
@@ -690,7 +694,7 @@ var styles = StyleSheet.create({
     bgboxBodyTopFloat: {
         position: 'absolute',
         left: 8,
-        top: 2,
+        top: 8,
         width: Size.width - 16,
         height: 20,
         backgroundColor: 'rgba(255,255,255,0.7)',

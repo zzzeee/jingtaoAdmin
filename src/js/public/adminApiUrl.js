@@ -4,8 +4,8 @@
  * @date   2017.04.18
  */
 
-// var host = 'http://vpn.jingtaomart.com';
-host = 'http://api.jingtaomart.com';
+var host = 'http://vpn.jingtaomart.com';
+// host = 'http://api.jingtaomart.com';
 
 var urls = {
     //服务器地址

@@ -63,10 +63,10 @@ export default class OrderLogistics extends Component {
                 sToken: this.mToken,
                 exPressNum: this.expressNum
             }, (result)=>{
-                // console.log(result);
+                console.log(result);
                 if(result && result.sTatus == 1) {
                     let express = result.exPreAy || null;
-                    let info = express && express.showapi_res_body ? express.showapi_res_body : [];
+                    let info = express && express.showapi_res_body ? express.showapi_res_body : {};
                     this.setState({logistics: info});
                 }
             });
@@ -97,7 +97,7 @@ export default class OrderLogistics extends Component {
         let logistics = this.state.logistics || {};
         let expressData = logistics.data || [];
         let expressNum = logistics.mailNo || '';
-        let expressName = logistics.expTextName || '';
+        let expressName = (!logistics.flag && logistics.msg) ? logistics.msg : ('物流公司: ' + logistics.expTextName || '');
         return (
             <ScrollView 
                 ref={(_ref)=>this.ref_flatList=_ref}
@@ -107,8 +107,8 @@ export default class OrderLogistics extends Component {
                     <Text style={styles.defaultFont} numberOfLines={1}>
                         {'物流单号: ' + expressNum}
                     </Text>
-                    <Text style={styles.defaultFont} numberOfLines={1}>
-                        {'物流公司: ' + expressName}
+                    <Text style={styles.defaultFont}>
+                        {expressName}
                     </Text>
                 </View>
                 {expressData.length > 0 ?

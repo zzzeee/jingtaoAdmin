@@ -78,10 +78,13 @@ export default class LogisticsNumber extends Component {
                 if(result) {
                     if(result.sTatus == 1 && result.exPreAy) {
                         if(result.exPreAy.showapi_res_body && result.exPreAy.showapi_res_code == 0) {
-                            let name = result.exPreAy.showapi_res_body.expTextName || null;
-                            if(name) {
+                            if(result.exPreAy.showapi_res_body.ret_code == 0) {
+                                let name = result.exPreAy.showapi_res_body.expTextName || null;
                                 obj.isError = false;
                                 obj.logistyCompany = name;
+                            }else if(result.exPreAy.showapi_res_body.msg) {
+                                obj.isError = true;
+                                obj.logistyCompany = result.exPreAy.showapi_res_body.msg;
                             }
                         }else if(result.exPreAy.showapi_res_error) {
                             obj.isError = true;
@@ -133,7 +136,7 @@ export default class LogisticsNumber extends Component {
         let { navigation } = this.props;
         let { logistyNumber, logistyCompany, isError } = this.state;
         let number = logistyNumber || '';
-        let company = logistyCompany || '输入物流单号自动识别快递公司';
+        let company = logistyCompany || '点我识别快递单号';
         let color = isError ? Color.redFontColor : Color.grayFontColor;
         return (
             <View style={styles.flex}>
@@ -141,10 +144,10 @@ export default class LogisticsNumber extends Component {
                     title='发货页'
                     goBack={true}
                     navigation={navigation}
-                    leftPress={()=>{
-                        let _backTo = this.params.backTo || 'Order';
-                        this.props.navigation.navigate(_backTo, this.params);
-                    }}
+                    //leftPress={()=>{
+                    //    let _backTo = this.params.backTo || 'Order';
+                    //    this.props.navigation.navigate(_backTo, this.params);
+                    //}}
                 />
                 <ScrollView keyboardShouldPersistTaps="handled">
                     <View style={styles.itemBox}>
@@ -173,7 +176,7 @@ export default class LogisticsNumber extends Component {
                         <TouchableOpacity style={styles.inputViewBox} onPress={this.queryExpress}>
                             <Text style={[styles.companyText, {
                                 color: color,
-                            }]}>{company}</Text>
+                            }]} numberOfLines={1}>{company}</Text>
                         </TouchableOpacity>
                     </View>
                     <TouchableOpacity style={styles.btnOk} onPress={this.deliverGoods}>

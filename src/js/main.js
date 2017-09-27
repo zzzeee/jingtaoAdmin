@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
         marginTop: 44,
     },
     foregroundTitle: {
-        height: 44,
+        height: 50,
         justifyContent : 'center',
 		alignItems: 'center',
     },
