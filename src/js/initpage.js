@@ -42,7 +42,10 @@ export default class PushActivity extends Component {
                 myVersion: "Version: 1.0"
              }
              */
-		});
+        });
+        // JPushModule.getRegistrationID((registrationId) => {
+        //     console.log('getRegistrationID:' + registrationId);
+        // });
         JPushModule.notifyJSDidLoad((resultCode)=>{
             //我他妈的也不知道这里应该写些啥, 但他娘的又不能不写。
             // console.log(resultCode);    //0
@@ -126,7 +129,7 @@ export default class PushActivity extends Component {
         let isEmulator = DeviceInfo.isEmulator();           //是否为虚拟机
         let obj = {
             'userAgent': userAgent,
-            'deviceName': 'aaaaa' + dName,
+            'deviceName': dName,
             'version': version,
             'buildNumber': buildNumber,
             'bundleId': bundleId,

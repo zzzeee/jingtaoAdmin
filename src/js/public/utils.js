@@ -105,7 +105,7 @@ var Util = {
             url = encodeURI(url);
         }
         
-        let fetchFunc = () => this.fetch(url, type, data, callback, load_error, load_error_config);
+        let fetchFunc = () => this.fetch(url, type, data, callback, load_error, {...load_error_config, hideLoad: false});
         load_error_config.fetchFunc = fetchFunc;
         try {
             fetch(url, fetchOptions)

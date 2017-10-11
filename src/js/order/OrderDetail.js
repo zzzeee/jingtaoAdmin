@@ -75,8 +75,24 @@ export default class OrderDetail extends Component {
 
     //获取订单信息
     getOrderInfo = async () => {
+        let { navigation } = this.props;
         if(!this.mToken) this.mToken = await _User.getUserID().then((result)=>result);
-        if(this.mToken && this.shopOrderNum) {
+        // console.log(this.mToken);
+        if(!this.mToken) {
+            navigation.navigate('Login', {
+                backTo: 'OrderDetail',
+                backObj: {
+                    isRefresh: true,
+                    selectIndex: this.selectIndex,
+                    shopOrderNum: this.shopOrderNum,
+                },
+            });
+        }else if(!this.shopOrderNum) {
+            navigation.navigate('Order', {
+                mToken: this.mToken,
+                selectIndex: this.selectIndex,
+            });
+        }else {
             Utils.fetch(Urls.getOrderDetail, 'post', {
                 sToken: this.mToken,
                 soID: this.shopOrderNum,
@@ -91,7 +107,7 @@ export default class OrderDetail extends Component {
                 }else if(result && result.sTatus == 4) {
                     _User.delUserID()
                     .then(()=>{
-                        this.props.navigation.navigate('Login', {
+                        navigation.navigate('Login', {
                             backTo: 'OrderDetail',
                             backObj: {
                                 isRefresh: true,
