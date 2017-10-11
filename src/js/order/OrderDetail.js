@@ -88,9 +88,9 @@ export default class OrderDetail extends Component {
                 },
             });
         }else if(!this.shopOrderNum) {
-            navigation.navigate('Order', {
-                mToken: this.mToken,
-                selectIndex: this.selectIndex,
+            this.setState({
+                isRefreshing: false,
+                load_or_error: this.notFindOrder(),
             });
         }else {
             Utils.fetch(Urls.getOrderDetail, 'post', {
@@ -115,6 +115,11 @@ export default class OrderDetail extends Component {
                                 shopOrderNum: this.shopOrderNum,
                             },
                         });
+                    });
+                }else {
+                    this.setState({
+                        isRefreshing: false,
+                        load_or_error: this.notFindOrder(),
                     });
                 }
             }, (view)=>{
@@ -258,15 +263,17 @@ export default class OrderDetail extends Component {
         );
     }
 
-    //隐藏支付框
-    hidePaymentBox = (func = null) => {
-        this.setState({ 
-            showPayModal: false,
-        }, ()=>{
-            if(func) func();
-        });
+    //找不到订单的视图
+    notFindOrder = () => {
+        return (
+            <View style={styles.centerView}>
+                <Image source={require('../../images/order/no_order.png')} style={styles.centerImage} />
+                <Text style={styles.centerText}>找不到该订单信息</Text>
+            </View>
+        )
     };
 
+    //订单详情内容
     orderComponent = () => {
         let orders = this.state.orders;
         if(!orders) return null;
@@ -560,6 +567,20 @@ var styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#eee',
+    },
+    centerView: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    centerImage: {
+        height: 110,
+        width: 110,
+    },
+    centerText: {
+        fontSize: 14,
+        color: '#72A5F6',
+        marginTop: 10,
     },
     sessionBox: {
         marginBottom: 10,

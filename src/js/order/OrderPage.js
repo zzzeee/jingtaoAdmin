@@ -264,7 +264,7 @@ export default class OrderComponent extends Component {
                                     return (
                                         <View style={styles.centerStyle}>
                                             <Image source={require('../../images/order/no_order.png')} style={styles.centerImage} />
-                                            <Text numberOfLines={1} style={styles.centerText}>这里没有订单</Text>
+                                            <Text numberOfLines={1} style={styles.centerText}>暂无订单列表</Text>
                                         </View>
                                     );
                                 }

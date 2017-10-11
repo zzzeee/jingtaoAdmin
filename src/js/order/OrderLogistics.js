@@ -12,6 +12,7 @@ import {
     Image,
     TouchableOpacity,
     ScrollView,
+    RefreshControl,
 } from 'react-native';
 
 import Utils from '../public/utils';
@@ -26,7 +27,9 @@ export default class OrderLogistics extends Component {
         super(props);
         this.state = {
             logistics: null,
+            isRefreshing: true,
         };
+        this.refreshAble = true;
         this.mToken = null;
         this.expressNum = null;
         this.ref_flatList = null;
@@ -49,6 +52,7 @@ export default class OrderLogistics extends Component {
             this.mToken = mToken;
             this.expressNum = expressNum;
             if(Logistics && Logistics.data) {
+                this.refreshAble = false;
                 this.setState({
                      logistics: Logistics,
                 });
@@ -58,18 +62,22 @@ export default class OrderLogistics extends Component {
 
     //获取物流数据
     getLogisticsData = () => {
-        if(!this.state.logistics && this.mToken && this.expressNum) {
+        if(this.refreshAble && this.mToken && this.expressNum) {
             Utils.fetch(Urls.getExpressInfo, 'post', {
                 sToken: this.mToken,
                 exPressNum: this.expressNum
             }, (result)=>{
                 console.log(result);
+                let obj = {isRefreshing: false};
                 if(result && result.sTatus == 1) {
                     let express = result.exPreAy || null;
                     let info = express && express.showapi_res_body ? express.showapi_res_body : {};
-                    this.setState({logistics: info});
+                    obj.logistics = info;
                 }
+                this.setState(obj);
             });
+        }else {
+            this.setState({isRefreshing: false});
         }
     };
 
@@ -84,9 +92,22 @@ export default class OrderLogistics extends Component {
                     onPress={()=>this.ref_flatList.scrollTo({x: 0, y: 0, animated: true})}
                 />
                 <View style={styles.flex}>
-                    {this.state.logistics ?
-                        this.listHeadView() : this.notDataView()
-                    }
+                    <ScrollView 
+                        ref={(_ref)=>this.ref_flatList=_ref}
+                        contentContainerStyle={styles.scrollStyle}
+                        refreshControl={<RefreshControl
+                            refreshing={this.state.isRefreshing}
+                            onRefresh={()=>{
+                                this.refreshAble = true;
+                                this.setState({isRefreshing: true}, this.getLogisticsData);
+                            }}
+                            title="释放立即刷新我..."
+                            tintColor={Color.mainFontColor}
+                            titleColor={Color.mainFontColor}
+                        />}
+                    >
+                        {this.listHeadView()}
+                    </ScrollView>
                 </View>
             </View>
         );
@@ -94,15 +115,14 @@ export default class OrderLogistics extends Component {
 
     //物流轨迹视图
     listHeadView = () => {
+        // if(this.state.logistics === null) return null;
         let logistics = this.state.logistics || {};
         let expressData = logistics.data || [];
         let expressNum = logistics.mailNo || '';
-        let expressName = (!logistics.flag && logistics.msg) ? logistics.msg : ('物流公司: ' + logistics.expTextName || '');
+        let expressName = (!logistics.flag && logistics.msg) ? (logistics.msg || '') : ('物流公司: ' + (logistics.expTextName || ''));
+        // if(expressData.length <= 0) return this.notDataView();
         return (
-            <ScrollView 
-                ref={(_ref)=>this.ref_flatList=_ref}
-                contentContainerStyle={styles.scrollStyle}
-            >
+            <View>
                 <View style={styles.sessionBox}>
                     <Text style={styles.defaultFont} numberOfLines={1}>
                         {'物流单号: ' + expressNum}
@@ -143,7 +163,7 @@ export default class OrderLogistics extends Component {
                     : this.notDataView()
                     
                 }
-            </ScrollView>
+            </View>
         );
     };
 
